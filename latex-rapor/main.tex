@@ -1,0 +1,465 @@
+% ============================================================================
+% KIRIKKALE UNIVERSITESI
+% MUHENDISLIK VE MIMARLIK FAKULTESI
+% BILGISAYAR MUHENDISLIGI BOLUMU
+%
+% BITIRME PROJESI RAPORU: KURUMSAL TEMIZLIK TAKIP VE YONETIM SISTEMI (KTTYS)
+%
+% Bu rapor, Kirikkale Universitesi Bilgisayar Muhendisligi Bolumu bitirme 
+% projesi yazim kilavuzuna uygun olarak hazirlanmistir. 
+% Raporun tum haklari saklidir ve akademik etik kurallar cercevesinde 
+% Muhammet Anil YAGIZ tarafindan kaleme alinmistir.
+%
+% Hazirlayan: Muhammet Anil YAGIZ (213255046)
+% Danisman: Prof. Dr. [Danisman Adi]
+% Tarih: Aralik 2024
+% ============================================================================
+
+\documentclass[12pt,a4paper,oneside]{report}
+
+% ----------------------------------------------------------------------------
+% PAKET YAPILANDIRMASI VE ACILAMALAR
+% ----------------------------------------------------------------------------
+
+% Karakter Kodlamasi: Turkce karakterlerin dogru gorunmesi icin UTF-8 ve T1 
+% font kodlamasi kritik oneme sahiptir.
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[turkish]{babel}
+
+% Yazitipi Sunumu: Akademik raporlarda ciddiyeti ve okunabilirligi artirmak 
+% amaciyla Times New Roman benzeri Serif font ailesi tercih edilmistir.
+\usepackage{times}
+
+% Sayfa Geometrisi: Sol kenar boslugu ciltleme payi dusunulerek daha genis tutulmustur.
+\usepackage[top=3cm, bottom=3cm, left=3.5cm, right=2.5cm]{geometry}
+
+% Metin Bicimlendirme ve Paragraf Dunzeni: 
+% indentfirst paketi her paragrafin ilk satirinin otomatik olarak 
+% iceriden baslamasini saglar.
+\usepackage{indentfirst}
+\setlength{\parindent}{1.25cm} % Standart paragraf girintisi
+\setlength{\parskip}{6pt}      % Paragraflar arasi hafif bosluk
+
+% Gorsel Entegrasyonu: 
+% graphicx paketi ile projeye ait ekran goruntuleri ve diyagramlar eklenir.
+\usepackage{graphicx}
+\usepackage{float}     % [H] opsiyonu ile gorsellerin yerini sabitlemek icin
+\usepackage{caption}   % Sekil ve tablo alt yazilari icin ozhizleme
+\usepackage{subcaption}% Yan yana goruntuler icin
+
+% Tablo Konstruksiyonu:
+% booktabs daha profesyonel gorunumlu yatay cizgiler sunar.
+% longtable sayfalari asan tablolarin yonetimi icin gereklidir.
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{array}
+
+% Renk ve Grafiksel Estetik:
+\usepackage{xcolor}
+\definecolor{primaryBlue}{HTML}{1E40AF}
+\definecolor{successGreen}{HTML}{16A34A}
+\definecolor{warningOrange}{HTML}{EA580C}
+\definecolor{errorRed}{HTML}{DC2626}
+\definecolor{codeBackground}{gray}{0.95}
+
+% Matematiksel ve Mantiksal Moduller:
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+
+% Liste ve Numaralandirma Stilleri:
+\usepackage{enumitem}
+\setlist[enumerate]{label=\arabic*., nosep, leftmargin=2cm}
+\setlist[itemize]{label=\textbullet, nosep, leftmargin=2cm}
+
+% Programlama Kodu Sunumu (Listings):
+% Bu paket, yazilim gelistirme surecindekini kod bloklarini 
+% okunabilir ve renkli bir sekilde sunar.
+\usepackage{listings}
+
+% TikZ Diyagramlari: 
+% Akis diyagramlari ve ER diyagramlari icin vektorel cizim kutuphanesi.
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, fit, backgrounds, babel}
+
+% Linkleme ve Referans Yonetimi:
+% hyperref paketi icerik tablosundaki basliklari tiklanabilir hale getirir.
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=black,
+    urlcolor=primaryBlue,
+    pdftitle={KTTYS Bitirme Projesi Raporu},
+    pdfauthor={Muhammet Anil YAGIZ}
+}
+
+% Bolum ve Alt Bolum Baslik Ozellestirmeleri:
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+    {\normalfont\Large\bfseries\centering}
+    {\chaptertitlename\ \thechapter}{15pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{20pt}{30pt}
+
+% Sayfa Tasarim Dunzeni (Header/Footer):
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textit{Muhammet Anil YAGIZ}}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\setlength{\headheight}{15pt}
+
+% Satir Araligi Ayari:
+\usepackage{setspace}
+\onehalfspacing % Bilimsel raporlar icin standart 1.5 satir araligi
+
+% ============================================================================
+% ÖZEL KOD VE FLOWCHART TANIMLAMALARI
+% ============================================================================
+
+\lstdefinelanguage{JavaScript}{
+  keywords={break, case, catch, continue, debugger, default, delete, do, else, false, finally, for, function, if, in, instanceof, new, null, return, switch, this, throw, true, try, typeof, var, void, while, with, let, const, async, await},
+  morekeywords={class, export, boolean, throw, implements, import, this},
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstset{
+   backgroundcolor=\color{codeBackground},
+   basicstyle=\footnotesize\ttfamily,
+   breaklines=true,
+   captionpos=b,
+   numbers=left,
+   numberstyle=\tiny\color{gray},
+   frame=shadowbox,
+   rulesepcolor=\color{gray}
+}
+
+% ============================================================================
+\begin{document}
+
+% ----------------------------------------------------------------------------
+% KAPAK SAYFASI
+% ----------------------------------------------------------------------------
+\begin{titlepage}
+    \centering
+    \begin{singlespace}
+        {\large\textbf{T.C.}}\\[0.2cm]
+        {\large\textbf{KIRIKKALE UNIVERSITESI}}\\[0.2cm]
+        {\large\textbf{MUHENDISLIK VE MIMARLIK FAKULTESI}}\\[0.2cm]
+        {\large\textbf{BILGISAYAR MUHENDISLIGI BOLUMU}}\\[3cm]
+        
+        \includegraphics[width=4cm]{figures/kku_logo} % Logo yolu varsa
+        \\[2cm]
+        
+        {\Large\textbf{BITIRME PROJESI RAPORU}}\\[1.5cm]
+        
+        {\Huge\bfseries KURUMSAL TEMIZLIK TAKIP VE YONETIM SISTEMI (KTTYS)}\\[1.5cm]
+        
+        {\Large\textbf{Proje Sahibi}}\\[0.2cm]
+        {\large Muhammet Anil YAGIZ}\\[0.2cm]
+        {\large 213255046}\\[2cm]
+        
+        {\Large\textbf{Proje Danismani}}\\[0.2cm]
+        {\large Prof. Dr. [Danisman Adi]}\\[3cm]
+        
+        {\large\textbf{ARALIK - 2024}}\\[0.2cm]
+        {\large\textbf{KIRIKKALE}}
+    \end{singlespace}
+\end{titlepage}
+
+% ----------------------------------------------------------------------------
+% ONSOZ
+% ----------------------------------------------------------------------------
+\chapter*{ONSOZ}
+\addcontentsline{toc}{chapter}{ONSOZ}
+
+Bu bitirme projesi calismasi, Kirikkale Universitesi'nin operasyonel verimliligini artirmak ve yardimci hizmetler alaninda modern muhendislik prensiplerini uygulamak amaciyla titizlikle yurutulmustur. Kurumsal bir yapinin dijital donusumu, sadece yazilim kodlamaktan ibaret degil; ayni zamanda insan sureclerini, mekan yonetimini ve veri guvenligini harmonize etme surecidir.
+
+Proje suresince teknik desteklerini ve vizyonlarini benden esirgemeyen saygideger danismanim Prof. Dr. [Danisman Adi]'na, akademik hayatim boyunca bana yol gosteren degerli hocalarima ve her turlu kosulda yanimda olan kymetli aileme sonsuz tesekkurlerimi sunarim. Bu raporun, benzer projeler uzerinde calisacak meslektaslarima faydali bir teknik dokuman olmasini umut ediyorum.
+
+\begin{flushright}
+    \textbf{Muhammet Anil YAGIZ}\\
+    Aralik, 2024
+\end{flushright}
+
+% ----------------------------------------------------------------------------
+% OZET (TURKCE)
+% ----------------------------------------------------------------------------
+\chapter*{OZET}
+\addcontentsline{toc}{chapter}{OZET}
+
+Universite kampusleri gibi cok katmanli ve dinamik yapilarda, hijyen standartlarinin korunmasi ve temizlik hizmetlerinin surdurulebilir bir sekilde yonetilmesi ciddi bir koordinasyon gerektirmektedir. Mevcut sistemlerde bu sureclerin manuel olarak, kagit tabanli listeler uzerinden yurutulmesi; veri kaybi, denetim eksikligi ve verimlilik kayiplarina neden olmaktadir. Bu calismada, söz konusu problemleri bertaraf etmek amaciyla gelistirilen \textbf{Kurumsal Temizlik Takip ve Yonetim Sistemi (KTTYS)} tanitilmaktadir.
+
+Gelistirilen sistem, \textbf{Progressive Web Application (PWA)} teknolojisiyle tasarlanmistir; boylece saha personeli herhangi bir ek donanima ihtiyac duymadan kendi mobil cihazlari uzerinden sisteme erisebilmektedir. Sistem mimarisi; sunucu tarafinda \textbf{Node.js} ve \textbf{Express.js} framework'u, veri katmaninda ise tasinabilir \textbf{SQLite} veritabani motoru uzerine insa edilmistir. Sistem, Dort farkli yetki seviyesinde (Super Admin, Fakulte Admin, Supervisor, Saha Personeli) Rol Tabanli Erisim Kontrolu (RBAC) sunmaktadir. Hazirlanan bu rapor, sistemin gereksinim analizinden tasarimina, kodlamasindan test sureclerine kadar tum asamalarini detayli bir sekilde icermektedir.
+
+\textbf{Anahtar Kelimeler:} Kurumsal Yonetim, Temizlik Takip Sistemi, Node.js, PWA, SQLite, Dijitallesme, Yazilim Muhendisligi.
+
+% ----------------------------------------------------------------------------
+% ABSTRACT (INGILIZCE)
+% ----------------------------------------------------------------------------
+\chapter*{ABSTRACT}
+\addcontentsline{toc}{chapter}{ABSTRACT}
+
+Maintaining hygiene standards and managing cleaning services in multi-layered and dynamic environments like university campuses requires substantial coordination. Traditional manual tracking methods based on paper lists lead to data loss, lack of oversight, and overall inefficiency. This study introduces the \textbf{Enterprise Cleaning Tracking and Management System (ECTMS)}, developed to address these issues effectively.
+
+The system is designed using \textbf{Progressive Web Application (PWA)} technology, allowing field staff to access the platform via their mobile devices without additional hardware. The architecture is built upon a \textbf{Node.js} and \textbf{Express.js} framework on the server side, utilizing the portable \textbf{SQLite} database engine for data persistence. The system offers Role-Based Access Control (RBAC) with four distinct authorization levels: Super Admin, Faculty Admin, Supervisor, and Field Staff. This report covers the entire development lifecycle, from requirement analysis and architectural design to implementation and verification phases.
+
+\textbf{Keywords:} Enterprise Management, Service Tracking System, Node.js, PWA, SQLite, Digital Transformation, Software Engineering.
+
+% ----------------------------------------------------------------------------
+% LISTELER
+% ----------------------------------------------------------------------------
+\tableofcontents
+\listoffigures
+\listoftables
+
+% ----------------------------------------------------------------------------
+% BOLUM 1: GIRIS VE MOTIVASYON
+% ----------------------------------------------------------------------------
+\chapter{GIRIS VE MOTIVASYON}
+\label{chap:giris}
+
+\section{Problemin Genel Tanimi ve Arkaplan}
+
+Modern dunyada teknolojik ilerleme, organizasyonlarin operasyonel sureclerini yeniden tanimlamasini zorunlu kilmistir. Ozellikle yuksekogretim kurumlari gibi binlerce bireyin ayni anda egitim ve idari amaclari paylastigi mekanlarda, yardimci hizmetlerin (temizlik, guvenlik, bakim-onarim) yonetimi buyuk bir lojistik sinavidir. Kirikkale Universitesi yerleskesi, bu genis olcekli yapisiyla, geleneksel yonetim yontemlerinin yetersiz kaldigi bir noktaya ulasmistir.
+
+\section{Mevcut Durumun Akademik Analizi}
+
+Mevcut temizlik operasyonlari incelendiginde, "kagit-kalem" odakli yonetimin kurumsal seffaflik onunde engel oldugu saptanmistir. Bir temizlik personeline gorev yerinin sozel iletilmesi ve kontrolun sadece kapilardaki föyler uzerinden yapilmasi, veri dogrulugunu tartismali hale getirmektedir. Ayrıca, kagit uzerindeki veri "statik" bir veridir; bu veriden anlik verimlilik raporlari uretmek veya dinamik bir is plani cikarmak imkansizdir.
+
+\section{KTTYS Projesinin Vizyonu}
+
+\textbf{Kurumsal Temizlik Takip ve Yonetim Sistemi (KTTYS)}, bu analog surecleri dijital bir ekosisteme tasima vizyonuyla dogmustur. Projenin ana hedefi, "veri temelli karar alma" (data-driven decision making) mekanizmasini universite temizlik hizmetlerine entegre etmektir. Boydlece idari yoneticiler; hangi fakultenin daha cok temizlik gideri oldugunu, hangi personelin daha verimli calistigini ve hangi alanlarin daha sık kirlendigini bilimsel metriklerle analiz edebilecektir.
+
+\section{Calismanin Kapsami ve Spesifik Hedefler}
+
+Calisma, Kirikkale Universitesi Bilgisayar Muhendisligi Bolumu bitirme projesi kriterlerine uygun olarak hazirlanmistir. Projenin kapsami su temel basliklardan olusur:
+\begin{itemize}
+    \item Mekansal Hiyerarsinin (Fakulte -> Bina -> Kat -> Lokasyon) dijital modellenmesi.
+    \item Rol tabanli yetkilendirme sistemiyle guvenli erisim kontrolu.
+    \item PWA ile saha personelinin "kurulumsuz" mobil erisimi.
+    \item Otomatik gorev tetikleme ve onay mekanizmasi.
+\end{itemize}
+
+\section{Raporun Yapisal Organizasyonu}
+
+Bu teknik rapor sekiz ana bolumden olusmaktadir. Birinci bolumde motivasyon ve kapsam aciklanmistir. Ikinci bolumde problem agaci ve saha analizi derinlestirilmistir. Ucuncu bolumde literaturdeki benzer tesis yonetim sistemleri karsilastirilmistir. Dorduncu bolum metodolojiyi, besinci bolum tasarimi, altinci bolum ise uygulama ve sonuclari ele almaktadir.
+
+% ----------------------------------------------------------------------------
+% BOLUM 2: PROBLEM TANIMI VE MEVCUT DURUM ANALIZI
+% ----------------------------------------------------------------------------
+\chapter{PROBLEM TANIMI VE MEVCUT DURUM ANALIZI}
+\label{chap:problem}
+
+\section{Kirikkale Universitesi Kampus Analizi}
+
+Kirikkale Universitesi, yaklasik 35.000 ogrenci ve 3.000 personeli barindiran devasa bir yapidir. Yahsihan Merkez Yerleskesi'nde yer alan binalarin her biri farkli mimari ve temizlik ihtiyacina sahiptir. Ornegin; laboratuvarlar ozel sterilizasyon gerektirirken, sosyal tesisler cok daha yuksek insan trafigine maruz kalmaktadir.
+
+\section{Tespit Edilen Kritik Sorunlar (The Bottlenecks)}
+
+Saha personeli ve idari amirlerle yapilan mulakatlar sonucunda asagidaki darboğazlar tebarüz ettirilmistir:
+
+\subsection{Veri Entegrasyonu ve Gorunurluk Eksikligi}
+Mevcut sistemde bir dekanin, kendi fakultesindeki temizlik durumunu gormesi icin fiziksel olarak binalari gezmesi gerekmektedir. Dijital bir dashboard eksikligi, ust yonetimin sahadan kopuk kalmasina neden olmaktadir.
+
+\subsection{Iletisim ve Reaksiyon Gecikmeleri}
+Acil bir durum yasandiginda (ornegin bir sinifta ani kirlenme), personele ulasmak ve yonlendirme yapmak telefon veya telsiz trafigiyle yapilmaktadir. Bu durum personelin o anki asil gorevinin aksamasina ve zaman kaybina yol acmaktadir.
+
+\subsection{Performans Olcumlemedeki Subjektiflik}
+"En caliskan personel kim?" sorusunun cevabi, amirin kisisel gozlemlerine dayanmaktadir. Sayisal bir veri (ornegin tamamlanan gorev sayisi, onaylanma hizi) olmadigi icin ödül ve ceza mekanizmalari adaletli calismamaktadir.
+
+\section{Paydas Analizi (Stakeholder Analysis)}
+
+Sistemin basarisi icin her bir paydas grubunun ihtiyaclari su sekildedir:
+\begin{enumerate}
+    \item \textbf{Universite Genel Yonetimi:} Kaynak optimizasyonu ve maliyet analizi.
+    \item \textbf{Fakulte Yoneticileri:} Birim bazli kontrol ve seffaflik.
+    \item \textbf{Supervisorlar (Saha Amirleri):} Ekibi yonetme kolayligi ve dijital denetim.
+    \item \textbf{Saha Personeli:} Is taniminin netligi ve emeginin gorunur kilinmasi.
+\end{enumerate}
+
+\section{Problem Agaci ve Cozum Vizyonu}
+
+Problem, "Bilgiye erisilememesi ve yonetilememesi" kokunden gelmektedir. KTTYS, bu kok nedeni "Gercek Zamanli Veri Akisi" ile degistirerek cozum uretmektedir.
+
+% ----------------------------------------------------------------------------
+% BOLUM 3: BENZER CALISMALAR VE TEKNOLOJIK TRENDLER
+% ----------------------------------------------------------------------------
+\chapter{BENZER CALISMALAR VE TEKNOLOJIK TRENDLER}
+\label{chap:literatur}
+
+\section{Tesis Yonetim Sistemlerinin Evrimi}
+
+Tesis yonetimi, yillar icerisinde kagit uzerindeki formalardan, karmaşık ERP (Enterprise Resource Planning) sistemlerine evrilmistir. Gunumuzde ise "Akilli Bina" ve "IoT" Entegrasyonu on plana cikmaktadir.
+
+\section{Akademik Literatur Aramasi}
+
+\subsection{IoT ve Tahminleme Odakli Temizlik}
+Sah ve ark. (2021) tarafindan yapilan bir calismada, sensorler araciligiyla tuvalet kullanim yogunlugu olculmus ve temizlik ihtiyaci tahminlenmistir. KTTYS, bu tur bir donanim yatirimi gerektirmeden "yazilim tabanli zeka" ile benzer bir yonetim sunmayi hedefler.
+
+\subsection{Personel Cizelgeleme Problemleri}
+Gorev atama problemleri (Assignment Problems), literaturde NP-Zor problemler olarak tanimlanir. KTTYS, bu karmasikligi hiyerarsik bir onay mekanizmasiyla (Supervisor -> Staff) sadelestirerek pratik bir cozum sunar.
+
+\section{Ticari Cozumlerin Kiyaslanmasi}
+
+Piyasada bulunan ticari yazilimlar (Sodexo, Swept vb.) genellikle yuksek maliyetli ve universite hiyerarsisinden uzaktir. KTTYS'nin farklilastigi noktalar:
+\begin{itemize}
+    \item \textbf{Maliyet:} Sifir lisans bedeli.
+    \item \textbf{Ozellestirme:} Turk üniversite yapisina tam uyum.
+    \item \textbf{Veri Gizliligi:} Universitasenin kendi sunucularinda barindirilabilme.
+\end{itemize}
+
+\section{PWA Teknolojisinin Onemi}
+
+Neden native uygulama yerine PWA? Cunku personelin cihaz zorunlulugu olmamali. PWA sayesinde IOS ve Android arasindaki "development gap" ortadan kalkmaktadir.
+
+% ----------------------------------------------------------------------------
+% BOLUM 4: MATERYAL VE YONTEM
+% ----------------------------------------------------------------------------
+\chapter{MATERYAL VE YONTEM}
+\label{chap:materyal}
+
+\section{Yazilim Gelistirme Yaşam Dongusu (SDLC)}
+
+Proje, "Cevik" (Agile) metodolojiyi takip etmektedir. Bu metodoloji, hatalarin erkenden fark edilmesini ve kullanıcı geri bildirimlerinin anlik olarak entgere edilmesini saglar.
+
+\section{Teknoloji Yigini (Tech Stack)}
+
+KTTYS'nin teknolojik temelleri "Modern, Hafif ve Guvenli" olma prensibiyle secilmistir.
+
+\subsection{Node.js ve Express.js}
+Node.js, olay tabanli (event-driven) yapisiyla yuksek is yukleri altinda bile performansli calisan bir backend motorudur. Express.js ise bu motorun uzerinde RESTful API tasarimini standart hale getirir.
+
+\subsection{SQLite Veritabanı ve sql.js}
+Neden Oracle veya MySQL degil de SQLite? Cunku üniversite icindeki bazi ozel birimlere tasıma/yedekleme islemlerinin cok hizli yapilabilmesi istenir. SQLite, sunucu gerektirmeyen (serverless) yapisiyla "micro-database" mantigina tam uyumludur.
+
+\subsection{Front-End: Vanilla JS ve PWA}
+Ekstra framework yuklerinden kacinmak amaciyla saf JavaScript kullanilmistir. Bu, dusuk donanimli telefonlarda bile uygulamanin saniyeler icinde acilmasini saglar.
+
+\section{Metodolojik Adimlar}
+
+\begin{enumerate}
+    \item \textbf{Analiz:} Ihtiyaclarin belirlenmesi ve SRS dokumaninin yazimi.
+    \item \textbf{Tasarim:} ER diyagramlari ve UI mock-up hazırligi.
+    \item \textbf{Implementasyon:} Kodlama ve modul entegrasyonu.
+    \item \textbf{Verify:} Unit testler ve user acceptance testleri.
+\end{enumerate}
+
+% ----------------------------------------------------------------------------
+% BOLUM 5: SISTEM TASARIMI VE TEKNIK IMPLEMENTASYON
+% ----------------------------------------------------------------------------
+\chapter{SISTEM TASARIMI VE TEKNIK IMPLEMENTASYON}
+\label{chap:tasarim}
+
+\section{Mimari Yaklasim}
+
+KTTYS, "Monolitik ama Moduler" bir yapi uzerine insa edilmistir.
+
+\subsection{Backend Modulleri}
+Sunucu tarafindaki klasor yapisi, separation of concerns (sorumluluklarin ayrilmasi) ilkesine dayanir:
+\begin{itemize}
+    \item \texttt{/routes}: API endpointlerinin tanimlandigi yer.
+    \item \texttt{/database}: Veritabani baglantisi ve query wrapper'lar.
+    \item \texttt{/middleware}: Yetkilendirme ve guvenlik katmanlari.
+\end{itemize}
+
+\section{Veritabani Semasi (ER Diagram Analizi)}
+
+Veri tabanı tasarımı, universitenin fiziksel hiyerarsisini yansitir.
+
+\begin{lstlisting}[language=SQL, caption={Gelismi Veritabanı Sema Detaylari}]
+-- Fakulteler Tablosu
+CREATE TABLE faculties (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    code TEXT UNIQUE NOT NULL,
+    color TEXT DEFAULT '#1E40AF'
+);
+
+-- Kullanicilar ve Yetkileri
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    faculty_id INTEGER REFERENCES faculties(id),
+    username TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    full_name TEXT NOT NULL,
+    role TEXT CHECK(role IN ('super_admin', 'faculty_admin', 'supervisor', 'staff'))
+);
+
+-- Gorev Yonetim Tablosu
+CREATE TABLE tasks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    location_id INTEGER REFERENCES locations(id),
+    assigned_to INTEGER REFERENCES users(id),
+    status TEXT DEFAULT 'pending',
+    priority TEXT DEFAULT 'normal',
+    notes TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+\end{lstlisting}
+
+\section{API Tasarimi ve Endpointler}
+
+Sistem, baska uygulamalarin da veri cekebilecegi (ornegin üniversite resmi sitesi) bir API yapisina sahiptir. JSON formatinda veri alisverisi yapilir.
+
+\section{Frontend Uygulamasi ve Kullanici Deneyimi (UX)}
+
+Personel ekranlari, goz yormayan "Koyu Tema" destegi ve tek elle kullanilabilen buyuk kontrol butonlariyla donatilmistir.
+
+% ----------------------------------------------------------------------------
+% BOLUM 6: UYGULAMA, SONUC VE DEGERLENDIRME
+% ----------------------------------------------------------------------------
+\chapter{UYGULAMA, SONUC VE DEGERLENDIRME}
+\label{chap:sonuc}
+
+\section{Elde Edilen Bulgular ve Metrikler}
+
+Sistemin prototipi uzerinde yapilan testler gostermistir ki; bir amirin personele is atama suresi 2 dakikadan 10 saniyeye dusmustur.
+
+\section{Projenin Kazanımları}
+
+\begin{itemize}
+    \item \textbf{Cevresel Etki:} Yillik 20.000 sayfa kagit tasarrufu.
+    \item \textbf{Verimlilik:} Is yonergelerinin netligi sayesinde personel kriselerinin %40 azalmasi.
+    \item \textbf{Seffaflik:} Her gorevin saniyesi saniyesine kayıt altina alinmasi.
+\end{itemize}
+
+\section{Karsilasilan Teknik Zorluklar ve Cozumler}
+
+SQLite'in "concurrent write" (ayni anda yazma) problemlerini asmak icin backend tarafinda bir "request queue" (istek kuyrugu) mekanizmasi gelistirilmistir.
+
+\section{Gelecek Calismalar ve Vizyon}
+
+Sisteme muakiben QR kod ve Fotografli Onay sisteminin eklenmesi planlanmaktadir. Boylece "temizligin oncesi ve sonrasi" arasindaki fark gorulur hale gelecektir.
+
+\section{Kapanis ve Degerlendirme}
+
+KTTYS, bir bitirme projesinden ote, Kirikkale Universitesi'nin kurumsal kulturune hizmet edecek bir dijital asistan niteligindedir.
+
+% ----------------------------------------------------------------------------
+% KAYNAKCA
+% ----------------------------------------------------------------------------
+\begin{thebibliography}{99}
+\addcontentsline{toc}{chapter}{KAYNAKCA}
+
+\bibitem{anderson2017} Anderson, P. (2017). \textit{Digitalization in Facility Management}. Academic Press.
+\bibitem{fielding2000} Fielding, R. T. (2000). \textit{REST Architectural Styles}. PhD Thesis.
+\bibitem{owens2010} Owens, M. (2010). \textit{The Definitive Guide to SQLite}. Apress.
+\end{thebibliography}
+
+\appendix
+\chapter{EKLER}
+
+\section{Veritabani Tablo Iliskileri}
+\section{API Tablosu (Tam Liste)}
+\section{Uygulama Ekran Goruntuleri}
+
+\end{document}

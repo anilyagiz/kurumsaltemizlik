@@ -1,0 +1,464 @@
+% ============================================================================
+% BOLUM 2: PROBLEM TANIMI
+% ============================================================================
+% Kurumsal Temizlik Takip ve Yonetim Sistemi (KTTYS)
+% Muhammet Anil YAGIZ - 213255046
+% Kirikkale Universitesi - Bilgisayar Muhendisligi Bolumu
+% ============================================================================
+
+\chapter{PROBLEM TANIMI}
+\label{chap:problem-tanimi}
+
+% ============================================================================
+% 2.1 GIRIS
+% ============================================================================
+\section{Giris}
+\label{sec:problem-giris}
+
+Kurumsal temizlik hizmetlerinin etkin yonetimi, ozellikle buyuk olcekli 
+kurumlarda operasyonel verimlilik icin kritik oneme sahiptir. Universiteler, 
+hastaneler, alisveris merkezleri ve kamu binalari gibi yogun insan 
+trafigine sahip yapilarda temizlik hizmetlerinin koordinasyonu, takibi 
+ve kalite kontrolu kritik bir yonetim fonksiyonu haline gelmektedir.
+
+Bu bolumde, Kirikkale Universitesi ozelinde temizlik yonetimi 
+sureclerinde karsilasilan problemler detayli olarak analiz 
+edilmektedir.
+
+% ============================================================================
+% 2.2 MEVCUT DURUM ANALIZI
+% ============================================================================
+\section{Mevcut Durum Analizi}
+\label{sec:mevcut-durum}
+
+Kirikkale Universitesi, Turkiye'nin Ic Anadolu Bolgesinde yer alan 
+ve cok sayida fakulte, yuksekokul, enstitu ve idari birimden olusan 
+kapsamli bir yuksekogretim kurumudur.
+
+\subsection{Fiziksel Altyapi Ozellikleri}
+\label{subsec:fiziksel-altyapi}
+
+Kirikkale Universitesi kampusunun fiziksel ozellikleri Tablo 
+\ref{tab:fiziksel-altyapi}'da ozetlenmektedir.
+
+\begin{table}[H]
+\centering
+\caption{Kirikkale Universitesi Fiziksel Altyapi Ozeti}
+\label{tab:fiziksel-altyapi}
+\begin{tabular}{|l|r|}
+\hline
+\textbf{Ozellik} & \textbf{Deger} \\
+\hline
+Toplam Fakulte Sayisi & 12 \\
+\hline
+Toplam Bina Sayisi & 45+ \\
+\hline
+Toplam Kapali Alan (m2) & 250.000+ \\
+\hline
+Derslik Sayisi & 300+ \\
+\hline
+Laboratuvar Sayisi & 150+ \\
+\hline
+Idari Ofis Sayisi & 200+ \\
+\hline
+Ortak Alan (Koridor, Hol) & 100+ \\
+\hline
+Tuvalet/Lavabo Alani & 200+ \\
+\hline
+Ogrenci Sayisi & 25.000+ \\
+\hline
+Akademik Personel & 1.500+ \\
+\hline
+Temizlik Personeli & 150+ \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Mevcut Temizlik Yonetim Sureci}
+\label{subsec:mevcut-surec}
+
+Kirikkale Universitesinde mevcut temizlik yonetim sureci, 
+geleneksel yontemlere dayali olarak yurutulmektedir. Bu surec, 
+Sekil \ref{fig:mevcut-surec}'te akis diyagrami olarak 
+gosterilmektedir.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.2cm,
+    startstop/.style={rectangle, rounded corners, minimum width=3cm, 
+        minimum height=0.8cm, text centered, draw=black, fill=red!30},
+    process/.style={rectangle, minimum width=3cm, minimum height=0.8cm, 
+        text centered, draw=black, fill=orange!30},
+    decision/.style={diamond, minimum width=2cm, minimum height=0.8cm, 
+        text centered, draw=black, fill=green!30, aspect=2},
+    io/.style={trapezium, trapezium left angle=70, trapezium right angle=110,
+        minimum width=2cm, minimum height=0.8cm, text centered, 
+        draw=black, fill=blue!30},
+    arrow/.style={thick,->,>=stealth}
+]
+    \node (start) [startstop] {Baslangic};
+    \node (plan) [process, below=of start] {Manuel Program Hazirlama};
+    \node (assign) [process, below=of plan] {Sozel Gorev Atama};
+    \node (execute) [process, below=of assign] {Temizlik Islemi};
+    \node (check) [decision, below=of execute] {Kontrol?};
+    \node (approve) [process, below left=1cm and 1cm of check] {Onay};
+    \node (reject) [process, below right=1cm and 1cm of check] {Ret/Tekrar};
+    \node (record) [io, below=of approve] {Kagit Kayit};
+    \node (end) [startstop, below=of record] {Bitis};
+    
+    \draw [arrow] (start) -- (plan);
+    \draw [arrow] (plan) -- (assign);
+    \draw [arrow] (assign) -- (execute);
+    \draw [arrow] (execute) -- (check);
+    \draw [arrow] (check) -| node[pos=0.25, above] {Evet} (approve);
+    \draw [arrow] (check) -| node[pos=0.25, above] {Hayir} (reject);
+    \draw [arrow] (approve) -- (record);
+    \draw [arrow] (reject) |- (execute);
+    \draw [arrow] (record) -- (end);
+\end{tikzpicture}
+\caption{Mevcut Temizlik Yonetim Sureci Akis Diyagrami}
+\label{fig:mevcut-surec}
+\end{figure}
+
+Mevcut surecin temel asamalari su sekilde ozetlenebilir:
+
+\begin{enumerate}
+    \item \textbf{Program Hazirlama:} Fakulte sekreterlikleri veya 
+    amirler tarafindan haftalik/aylik temizlik programlari Excel 
+    veya kagit uzerinde hazirlanmaktadir.
+    
+    \item \textbf{Gorev Atama:} Gorevler, sabah toplantilarinda veya 
+    telefonla personele sozel olarak iletilmektedir.
+    
+    \item \textbf{Uygulama:} Temizlik personeli atanan gorevleri 
+    kendi basina yurutmektedir.
+    
+    \item \textbf{Kontrol:} Denetleyiciler rastgele kontroller 
+    yapmakta, ancak sistematik bir takip bulunmamaktadir.
+    
+    \item \textbf{Kayit:} Yapilan isler kagit formlara elle 
+    yazilmakta veya hic kayit tutulmamaktadir.
+\end{enumerate}
+
+% ============================================================================
+% 2.3 TESPIT EDILEN PROBLEMLER
+% ============================================================================
+\section{Tespit Edilen Problemler}
+\label{sec:problemler}
+
+Mevcut sistemin detayli analizi sonucunda, asagidaki temel 
+problem kategorileri tespit edilmistir.
+
+\subsection{Izlenebilirlik Problemleri}
+\label{subsec:izlenebilirlik-problemleri}
+
+\begin{enumerate}
+    \item \textbf{Gorev Takibi Eksikligi:} Hangi lokasyonun ne zaman, 
+    kim tarafindan temizlendiginin takibi mumkun degildir.
+    
+    \item \textbf{Kayit Guvenirliligi:} Kagit tabanli kayitlar 
+    kolaylikla manipule edilebilmekte, kaybolabilmekte veya 
+    zarar gorebilmektedir.
+    
+    \item \textbf{Gecmis Veri Erisimi:} Gecmis donemlere ait temizlik 
+    verilerine erisim oldukca guctur ve zaman alicidir.
+    
+    \item \textbf{Anlik Durum Bilgisi:} Herhangi bir lokasyonun mevcut 
+    temizlik durumu hakkinda anlik bilgi edinmek mumkun degildir.
+\end{enumerate}
+
+\subsection{Koordinasyon Problemleri}
+\label{subsec:koordinasyon-problemleri}
+
+\begin{enumerate}
+    \item \textbf{Iletisim Kopukluklari:} Yonetim, denetleyiciler ve 
+    temizlik personeli arasindaki iletisim cogunlukla anlik ve 
+    yapilandirilmamis bir sekilde gerceklesmektedir.
+    
+    \item \textbf{Program Cakismalari:} Farkli birimlerdeki programlar 
+    arasinda koordinasyon eksikligi nedeniyle cakismalar 
+    yasanabilmektedir.
+    
+    \item \textbf{Acil Durum Mudahalesi:} Beklenmeyen temizlik 
+    ihtiyaclarina (dokuntu, kaza vb.) hizli mudahale koordinasyonu 
+    zorlasmaktadir.
+    
+    \item \textbf{Personel Ikamesi:} Izinli veya hasta personelin 
+    yerine ikame atama sureci verimsiz calismaktadir.
+\end{enumerate}
+
+\subsection{Kaynak Yonetimi Problemleri}
+\label{subsec:kaynak-problemleri}
+
+\begin{enumerate}
+    \item \textbf{Is Yuku Dengesizligi:} Bazi personele asiri yuklenme 
+    olurken, bazilari dusuk kapasiteyle calismaktadir.
+    
+    \item \textbf{Zaman Optimizasyonu:} Personelin bina icindeki 
+    hareket rotalari optimize edilmemekte, gereksiz zaman kaybi 
+    yasanmaktadir.
+    
+    \item \textbf{Malzeme Takibi:} Temizlik malzemelerinin kullanimi 
+    ve stok durumu etkin bir sekilde takip edilememektedir.
+    
+    \item \textbf{Ekipman Bakimi:} Temizlik ekipmanlarinin bakim 
+    zamanlarinin takibi yapilamamaktadir.
+\end{enumerate}
+
+\subsection{Raporlama ve Analiz Problemleri}
+\label{subsec:raporlama-problemleri}
+
+\begin{enumerate}
+    \item \textbf{Performans Olcumu:} Bireysel ve takim performansinin 
+    objektif olcumu mumkun degildir.
+    
+    \item \textbf{Istatistiksel Analiz:} Temizlik hizmetlerine iliskin 
+    trend analizleri, karsilastirmali degerlendirmeler 
+    yapilamamaktadir.
+    
+    \item \textbf{Karar Destek:} Yoneticiler, veri destekli kararlar 
+    almak icin gerekli bilgiye erisememektedir.
+    
+    \item \textbf{Maliyet Analizi:} Birim basina temizlik maliyetinin 
+    hesaplanmasi gucleşmektedir.
+\end{enumerate}
+
+% ============================================================================
+% 2.4 PROBLEM AGACI ANALIZI
+% ============================================================================
+\section{Problem Agaci Analizi}
+\label{sec:problem-agaci}
+
+Tespit edilen problemlerin sistematik analizi icin problem agaci 
+(problem tree) yontemi uygulanmistir. Bu yontem, temel problemin 
+nedenlerini ve sonuclarini hiyerarsik olarak gorsellestirmektedir.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.2cm,
+    box/.style={rectangle, draw, text width=3.2cm, text centered, 
+                minimum height=0.8cm, font=\small},
+    mainbox/.style={rectangle, draw, fill=red!30, text width=5cm, 
+                    text centered, minimum height=1cm, font=\bfseries},
+    causebox/.style={rectangle, draw, fill=orange!30, text width=2.8cm, 
+                     text centered, minimum height=0.7cm, font=\small},
+    effectbox/.style={rectangle, draw, fill=blue!30, text width=2.8cm, 
+                      text centered, minimum height=0.7cm, font=\small}
+]
+    % Ana Problem
+    \node[mainbox] (main) {Temizlik Hizmetlerinin Verimsiz Yonetimi};
+    
+    % Nedenler (alt)
+    \node[causebox, below left=1.5cm and 3cm of main] (cause1) 
+        {Dijital Altyapi Eksikligi};
+    \node[causebox, below left=1.5cm and 0.5cm of main] (cause2) 
+        {Manuel Surecler};
+    \node[causebox, below right=1.5cm and 0.5cm of main] (cause3) 
+        {Iletisim Yetersizligi};
+    \node[causebox, below right=1.5cm and 3cm of main] (cause4) 
+        {Egitim Eksikligi};
+    
+    % Sonuclar (ust)
+    \node[effectbox, above left=1.5cm and 3cm of main] (effect1) 
+        {Dusuk Verimlilik};
+    \node[effectbox, above left=1.5cm and 0.5cm of main] (effect2) 
+        {Maliyet Artisi};
+    \node[effectbox, above right=1.5cm and 0.5cm of main] (effect3) 
+        {Kalite Dususu};
+    \node[effectbox, above right=1.5cm and 3cm of main] (effect4) 
+        {Paydas Memnuniyetsizligi};
+    
+    % Oklar
+    \draw[->] (cause1) -- (main);
+    \draw[->] (cause2) -- (main);
+    \draw[->] (cause3) -- (main);
+    \draw[->] (cause4) -- (main);
+    \draw[->] (main) -- (effect1);
+    \draw[->] (main) -- (effect2);
+    \draw[->] (main) -- (effect3);
+    \draw[->] (main) -- (effect4);
+    
+    % Etiketler
+    \node[left=0.3cm of cause1, font=\small\itshape] {Nedenler};
+    \node[left=0.3cm of effect1, font=\small\itshape] {Sonuclar};
+    
+\end{tikzpicture}
+\caption{Temizlik Yonetimi Problem Agaci}
+\label{fig:problem-agaci}
+\end{figure}
+
+\subsection{Kok Nedenler}
+\label{subsec:kok-nedenler}
+
+Problem agaci analizinde tespit edilen kok nedenler sunlardir:
+
+\begin{description}
+    \item[Dijital Altyapi Eksikligi:] Universitede temizlik 
+    hizmetlerinin yonetimi icin ozel olarak tasarlanmis bir 
+    yazilim sistemi bulunmamaktadir.
+    
+    \item[Manuel Surecler:] Planlama, atama, takip ve raporlama 
+    sureclerinin tamami manuel olarak yurutulmektedir.
+    
+    \item[Iletisim Yetersizligi:] Hiyerarsik yapi icindeki farkli 
+    kademeler arasinda etkin bir iletisim kanali bulunmamaktadir.
+    
+    \item[Egitim Eksikligi:] Personelin dijital araclarin kullanimi 
+    konusunda yeterli egitimi bulunmamaktadir.
+\end{description}
+
+\subsection{Sonuclar ve Etkileri}
+\label{subsec:sonuclar}
+
+Kok nedenlerin yarattigi olumsuz sonuclar sunlardir:
+
+\begin{description}
+    \item[Dusuk Verimlilik:] Personel zamaninin onemli bir kismi 
+    koordinasyon ve iletis sorunlarina harcanmaktadir.
+    
+    \item[Maliyet Artisi:] Verimsiz kaynak kullanimi, fazla mesai 
+    ihtiyaci ve malzeme israfi toplam maliyetleri artirmaktadir.
+    
+    \item[Kalite Dususu:] Denetim eksikligi ve takip yetersizligi, 
+    temizlik hizmetlerinin kalitesini olumsuz etkilemektedir.
+    
+    \item[Paydas Memnuniyetsizligi:] Ogrenciler, akademik personel 
+    ve ziyaretciler temizlik hizmetlerinden memnun kalmayabilmektedir.
+\end{description}
+
+% ============================================================================
+% 2.5 PAYDAS ANALIZI
+% ============================================================================
+\section{Paydas Analizi}
+\label{sec:paydas-analizi}
+
+Sistemin basarili bir sekilde tasarlanmasi ve uygulanmasi icin 
+tum paydaslarin tanimlanmasi ve ihtiyaclarinin analiz edilmesi 
+gerekmektedir.
+
+\subsection{Birincil Paydaslar}
+\label{subsec:birincil-paydaslar}
+
+\begin{table}[H]
+\centering
+\caption{Birincil Paydas Analizi}
+\label{tab:birincil-paydaslar}
+\begin{tabular}{|p{2.5cm}|p{4cm}|p{5cm}|}
+\hline
+\textbf{Paydas} & \textbf{Rol} & \textbf{Ihtiyaclar/Beklentiler} \\
+\hline
+Temizlik Personeli & Temizlik gorevlerini yurutur & Acik gorev tanimlari, 
+adil is dagilimi, kolay kullanim \\
+\hline
+Denetleyiciler & Personeli denetler ve gorevleri onaylar & 
+Gercek zamanli takip, onay mekanizmasi, raporlama \\
+\hline
+Fakulte Yoneticileri & Fakulte bazinda temizlik yonetimi & Program 
+olusturma, personel atama, analitik gorunum \\
+\hline
+Genel Yonetim & Sistem geneli yonetim & Merkezi kontrol, 
+kapsamli raporlar, sistem konfigurasyonu \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Ikincil Paydaslar}
+\label{subsec:ikincil-paydaslar}
+
+\begin{itemize}
+    \item \textbf{Ogrenciler:} Temiz ve hijyenik ortamlarda 
+    egitim gormek istemektedirler.
+    
+    \item \textbf{Akademik Personel:} Temiz calisma ortami 
+    beklentisi icindedirler.
+    
+    \item \textbf{Ziyaretciler:} Kampusun temizlik durumu 
+    kurumsal imaji etkilemektedir.
+    
+    \item \textbf{Idari Personel:} Ortak alanlarin temizligi 
+    calisma verimliligini etkilemektedir.
+    
+    \item \textbf{Malzeme Tedarikcileri:} Temizlik malzemesi 
+    tuketim verilerine ihtiyac duyulmaktadir.
+\end{itemize}
+
+% ============================================================================
+% 2.6 COZUM HEDEFLERI
+% ============================================================================
+\section{Cozum Hedefleri}
+\label{sec:cozum-hedefleri}
+
+Tespit edilen problemlerin cozumune yonelik olarak gelistirilen 
+sistemin karsilamasi gereken hedefler asagida tanimlanmaktadir.
+
+\subsection{Birincil Hedefler}
+\label{subsec:birincil-hedefler}
+
+\begin{enumerate}
+    \item \textbf{Dijital Donusum:} Manuel temizlik yonetim 
+    sureclerinin tamamen dijitallestirilmesi.
+    
+    \item \textbf{Merkezi Yonetim:} Tum fakultelerin tek bir 
+    platform uzerinden yonetilebilmesi.
+    
+    \item \textbf{Izlenebilirlik:} Tum gorevlerin ve islemlerin 
+    kayit altina alinarak izlenebilir hale getirilmesi.
+    
+    \item \textbf{Verimlilik Artisi:} Koordinasyon ve iletisim 
+    sureclerinin optimizasyonu ile verimlilik artisi saglanmasi.
+\end{enumerate}
+
+\subsection{Ikincil Hedefler}
+\label{subsec:ikincil-hedefler}
+
+\begin{enumerate}
+    \item \textbf{Kullanici Deneyimi:} Tum kullanici gruplari icin 
+    kolay ve sezgisel bir arayuz sunulmasi.
+    
+    \item \textbf{Mobil Erisim:} Sistemin mobil cihazlardan 
+    erisilebilir olmasi.
+    
+    \item \textbf{Raporlama Kapasitesi:} Kapsamli ve ozellestirilebilir 
+    raporlar olusturulabilmesi.
+    
+    \item \textbf{Olceklenebilirlik:} Sistemin gelecekte universitenin 
+    tum birimlerini kapsayacak sekilde genisletilebilmesi.
+\end{enumerate}
+
+% ============================================================================
+% 2.7 BASARI KRITERLERI
+% ============================================================================
+\section{Basari Kriterleri}
+\label{sec:basari-kriterleri}
+
+Projenin basarisinin degerlendirilmesi icin belirlenen olculebilir 
+kriterler Tablo \ref{tab:basari-kriterleri}'de sunulmaktadir.
+
+\begin{table}[H]
+\centering
+\caption{Proje Basari Kriterleri}
+\label{tab:basari-kriterleri}
+\begin{tabular}{|p{4cm}|p{3cm}|p{4cm}|}
+\hline
+\textbf{Kriter} & \textbf{Hedef Deger} & \textbf{Olcum Yontemi} \\
+\hline
+Gorev tamamlama orani & 95\%+ & Sistem kayitlari \\
+\hline
+Ortalama gorev onay suresi & $<$ 2 saat & Zaman damgasi analizi \\
+\hline
+Sistem kullanim orani & 90\%+ & Aktif kullanici takibi \\
+\hline
+Kullanici memnuniyeti & 4/5+ & Anket calismasi \\
+\hline
+Raporlama suresi & $<$ 1 dakika & Performans testi \\
+\hline
+Sistem uptime & 99\%+ & Sunucu izleme \\
+\hline
+\end{tabular}
+\end{table}
+
+Bu bolumde sunulan problem analizi, sistemin tasarim ve gelistirme 
+sureclerine temel teskil etmektedir. Bir sonraki bolumde, bu alanda 
+yapilmis benzer calismalar incelenecektir.

@@ -1,0 +1,213 @@
+% ============================================================================
+% EKLER (APPENDIX)
+% ============================================================================
+
+\appendix
+
+\chapter{EKLER}
+\label{chap:ekler}
+
+\section{Ornek Kod Parcalari}
+\label{sec:ornek-kodlar}
+
+\subsection{Kimlik Dogrulama Modulu}
+\label{subsec:auth-kod}
+
+\begin{lstlisting}[language=JavaScript, caption={auth.js - Kullanici Giris Islemi}]
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const db = require('../database/db');
+
+const router = express.Router();
+
+// POST /api/auth/login - Giris yap
+router.post('/login', (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        // Alanlar bos mu kontrol et
+        if (!username || !password) {
+            return res.status(400).json({ 
+                error: 'Kullanici adi ve sifre gerekli' 
+            });
+        }
+
+        // Kullaniciyi veritabanindan bul
+        const user = db.prepare(`
+            SELECT u.*, f.name as faculty_name
+            FROM users u
+            LEFT JOIN faculties f ON u.faculty_id = f.id
+            WHERE u.username = ? AND u.is_active = 1
+        `).get(username);
+
+        if (!user) {
+            return res.status(401).json({ 
+                error: 'Kullanici bulunamadi' 
+            });
+        }
+
+        // Sifre dogrulamasi
+        const validPassword = bcrypt.compareSync(
+            password, 
+            user.password_hash
+        );
+        
+        if (!validPassword) {
+            return res.status(401).json({ 
+                error: 'Sifre hatali' 
+            });
+        }
+
+        // Session olustur
+        req.session.user = {
+            id: user.id,
+            username: user.username,
+            role: user.role,
+            faculty_id: user.faculty_id
+        };
+
+        res.json({
+            message: 'Giris basarili',
+            user: req.session.user
+        });
+
+    } catch (error) {
+        res.status(500).json({ 
+            error: 'Giris yapilamadi' 
+        });
+    }
+});
+
+module.exports = router;
+\end{lstlisting}
+
+\subsection{Middleware - Yetkilendirme Kontrolu}
+\label{subsec:middleware-kod}
+
+\begin{lstlisting}[language=JavaScript, caption={auth.js - Yetkilendirme Middleware}]
+// Oturum kontrolu middleware
+const requireAuth = (req, res, next) => {
+    if (!req.session.user) {
+        return res.status(401).json({ 
+            error: 'Oturum acilmamis' 
+        });
+    }
+    next();
+};
+
+// Super Admin yetkisi kontrolu
+const requireSuperAdmin = (req, res, next) => {
+    if (req.session.user.role !== 'super_admin') {
+        return res.status(403).json({ 
+            error: 'Super Admin yetkisi gerekli' 
+        });
+    }
+    next();
+};
+
+// Fakulte Admin veya ustu yetki kontrolu
+const requireFacultyAdmin = (req, res, next) => {
+    const allowedRoles = ['super_admin', 'faculty_admin'];
+    
+    if (!allowedRoles.includes(req.session.user.role)) {
+        return res.status(403).json({ 
+            error: 'Yetkiniz yok' 
+        });
+    }
+    next();
+};
+
+module.exports = { 
+    requireAuth, 
+    requireSuperAdmin, 
+    requireFacultyAdmin 
+};
+\end{lstlisting}
+
+\section{Veritabani Semasi}
+\label{sec:veritabani-semasi}
+
+\begin{lstlisting}[language=SQL, caption={schema.sql - Veritabani Semasi}]
+-- FAKULTELER
+CREATE TABLE IF NOT EXISTS faculties (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    code TEXT UNIQUE NOT NULL,
+    color TEXT DEFAULT '#1e40af',
+    is_active INTEGER DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- KULLANICILAR
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    faculty_id INTEGER REFERENCES faculties(id),
+    username TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    full_name TEXT NOT NULL,
+    role TEXT CHECK(role IN (
+        'super_admin', 'faculty_admin', 
+        'supervisor', 'staff'
+    )) NOT NULL,
+    is_active INTEGER DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- GOREVLER
+CREATE TABLE IF NOT EXISTS tasks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    location_id INTEGER REFERENCES locations(id),
+    assigned_to INTEGER REFERENCES users(id),
+    status TEXT CHECK(status IN (
+        'pending', 'in_progress', 'completed', 
+        'approved', 'rejected'
+    )) DEFAULT 'pending',
+    due_date DATE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+\end{lstlisting}
+
+\section{Ornek Kullanici Hesaplari}
+\label{subsec:ornek-kullanicilar}
+
+\begin{table}[H]
+\centering
+\caption{Test Kullanici Hesaplari}
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Kullanici Adi} & \textbf{Sifre} & \textbf{Rol} & \textbf{Fakulte} \\
+\hline
+superadmin & super123 & Super Admin & - \\
+\hline
+muh\_admin & admin123 & Fakulte Admin & MUH \\
+\hline
+muh\_sup1 & super123 & Supervisor & MUH \\
+\hline
+muh\_temiz1 & temiz123 & Staff & MUH \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{API Test Ornekleri}
+\label{sec:api-test}
+
+\begin{lstlisting}[basicstyle=\ttfamily\small, frame=single, 
+                   caption={Giris API Istegi}]
+POST /api/auth/login
+Content-Type: application/json
+
+{
+    "username": "superadmin",
+    "password": "super123"
+}
+
+// Basarili yanit:
+{
+    "message": "Giris basarili",
+    "user": {
+        "id": 1,
+        "username": "superadmin",
+        "role": "super_admin"
+    }
+}
+\end{lstlisting}

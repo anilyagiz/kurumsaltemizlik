@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Kırıkkale Üniversitesi Temizlik Takip Sistemi">
+    <meta name="theme-color" content="#1e3a5f">
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <title>Temizlik Takip - Kırıkkale Üniversitesi</title>
+</head>
+
+<body>
+    <!-- Offline Banner -->
+    <div class="offline-banner" id="offline-banner">
+        ⚠️ Çevrimdışı moddasınız. Bazı özellikler çalışmayabilir.
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading" style="width: 48px; height: 48px;"></div>
+    </div>
+
+    <!-- Login Page -->
+    <div class="login-page" id="login-page">
+        <div class="login-card">
+            <div class="login-logo">
+                <div class="login-logo-icon">🧹</div>
+                <h1 class="login-title">Temizlik Takip Sistemi</h1>
+                <p class="login-subtitle">Kırıkkale Üniversitesi</p>
+            </div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label" for="username">Kullanıcı Adı</label>
+                    <input type="text" id="username" name="username" class="form-input"
+                        placeholder="Kullanıcı adınızı girin" required autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">Şifre</label>
+                    <input type="password" id="password" name="password" class="form-input"
+                        placeholder="Şifrenizi girin" required autocomplete="current-password">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg">
+                    Giriş Yap
+                </button>
+            </form>
+
+            <div
+                style="margin-top: 24px; padding: 16px; background: var(--gray-50); border-radius: 8px; font-size: 13px;">
+                <p style="font-weight: 600; margin-bottom: 12px; color: var(--gray-700);">🔐 Demo Giriş Bilgileri:</p>
+                <table style="width: 100%; border-collapse: collapse; color: var(--gray-600);">
+                    <tr>
+                        <td style="padding: 4px 0;"><strong>Super Admin:</strong></td>
+                        <td style="padding: 4px 0;">superadmin / super123</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 4px 0;"><strong>Fakülte Admin:</strong></td>
+                        <td style="padding: 4px 0;">muh_admin / admin123</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 4px 0;"><strong>Supervisor:</strong></td>
+                        <td style="padding: 4px 0;">muh_sup1 / super123</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 4px 0;"><strong>Personel:</strong></td>
+                        <td style="padding: 4px 0;">muh_temiz1 / temiz123</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App (Hidden until login) -->
+    <div id="app" class="hidden">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="header-brand">
+                        <div class="header-logo">🧹</div>
+                        <div>
+                            <div class="header-title">Temizlik Takip</div>
+                            <div class="header-subtitle" id="header-faculty">Kırıkkale Üniversitesi</div>
+                        </div>
+                    </div>
+                    <div class="header-user">
+                        <div class="header-user-info">
+                            <div class="header-user-name" id="header-user-name">-</div>
+                            <div class="header-user-role" id="header-user-role">-</div>
+                        </div>
+                        <button class="btn btn-ghost" id="btn-logout" title="Çıkış Yap">
+                            🚪
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav">
+            <div class="container">
+                <ul class="nav-list" id="nav-list">
+                    <li><a href="#dashboard" class="nav-link active" data-page="dashboard">📊 Panel</a></li>
+                    <li><a href="#tasks" class="nav-link" data-page="tasks">📋 Görevler</a></li>
+                    <li><a href="#schedules" class="nav-link" data-page="schedules"
+                            data-role="faculty_admin,super_admin">📅 Planlama</a></li>
+                    <li><a href="#locations" class="nav-link" data-page="locations"
+                            data-role="faculty_admin,super_admin">📍 Mekanlar</a></li>
+                    <li><a href="#users" class="nav-link" data-page="users" data-role="faculty_admin,super_admin">👥
+                            Kullanıcılar</a></li>
+                    <li><a href="#reports" class="nav-link" data-page="reports"
+                            data-role="supervisor,faculty_admin,super_admin">📈 Raporlar</a></li>
+                    <li><a href="#faculties" class="nav-link" data-page="faculties" data-role="super_admin">🏛️
+                            Fakülteler</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="container">
+            <!-- Dashboard Page -->
+            <div class="page active" id="page-dashboard">
+                <h2 class="mb-6">Gösterge Paneli</h2>
+
+                <div class="dashboard-grid" id="dashboard-stats">
+                    <!-- Stats will be loaded here -->
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Bugünün Görevleri</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="task-list" id="today-tasks">
+                            <!-- Tasks will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tasks Page -->
+            <div class="page" id="page-tasks">
+                <div class="flex justify-between items-center mb-6">
+                    <h2>Görevler</h2>
+                    <div class="flex gap-2">
+                        <select class="form-select" id="filter-status" style="width: auto; min-height: 44px;">
+                            <option value="">Tüm Durumlar</option>
+                            <option value="pending">Bekliyor</option>
+                            <option value="in_progress">Devam Ediyor</option>
+                            <option value="completed">Tamamlandı</option>
+                            <option value="approved">Onaylandı</option>
+                            <option value="rejected">Reddedildi</option>
+                        </select>
+                        <button class="btn btn-primary" id="btn-new-task"
+                            data-role="supervisor,faculty_admin,super_admin">
+                            + Yeni Görev
+                        </button>
+                    </div>
+                </div>
+
+                <div class="task-list" id="task-list">
+                    <!-- Tasks will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Schedules Page -->
+            <div class="page" id="page-schedules">
+                <div class="flex justify-between items-center mb-6">
+                    <h2>Haftalık Planlama</h2>
+                    <div class="flex gap-2">
+                        <button class="btn btn-success" id="btn-generate-tasks">
+                            ⚡ Bugünün Görevlerini Oluştur
+                        </button>
+                        <button class="btn btn-primary" id="btn-new-schedule">
+                            + Yeni Program
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body" style="overflow-x: auto;">
+                        <div id="schedule-calendar">
+                            <!-- Calendar will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Locations Page -->
+            <div class="page" id="page-locations">
+                <div class="flex justify-between items-center mb-6">
+                    <h2>Mekan Yönetimi</h2>
+                    <div class="flex gap-2">
+                        <button class="btn btn-primary" id="btn-new-building">+ Bina</button>
+                        <button class="btn btn-outline" id="btn-new-department">+ Departman</button>
+                        <button class="btn btn-outline" id="btn-new-room">+ Oda</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div id="location-tree">
+                            <!-- Location tree will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Page -->
+            <div class="page" id="page-users">
+                <div class="flex justify-between items-center mb-6">
+                    <h2>Kullanıcı Yönetimi</h2>
+                    <button class="btn btn-primary" id="btn-new-user">
+                        + Yeni Kullanıcı
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Ad Soyad</th>
+                                <th>Kullanıcı Adı</th>
+                                <th>Rol</th>
+                                <th>Fakülte</th>
+                                <th>Durum</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body">
+                            <!-- Users will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Reports Page -->
+            <div class="page" id="page-reports">
+                <div class="flex justify-between items-center mb-6">
+                    <h2>Raporlar</h2>
+                    <div class="flex gap-2">
+                        <input type="date" id="report-date" class="form-input" style="width: auto; min-height: 44px;">
+                        <button class="btn btn-outline" id="btn-export-csv">
+                            📥 CSV İndir
+                        </button>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid mb-6" id="report-stats">
+                    <!-- Report stats here -->
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Haftalık Performans</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="report-weekly">
+                            <!-- Weekly report here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Faculties Page (Super Admin) -->
+            <div class="page" id="page-faculties">
+                <div class="flex justify-between items-center mb-6">
+                    <h2>Fakülte Yönetimi</h2>
+                    <button class="btn btn-primary" id="btn-new-faculty">
+                        + Yeni Fakülte
+                    </button>
+                </div>
+
+                <div class="dashboard-grid" id="faculties-grid">
+                    <!-- Faculties will be loaded here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Task Modal -->
+    <div class="modal-overlay" id="modal-task">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-task-title">Yeni Görev</h3>
+                <button class="modal-close" data-close-modal>&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-task">
+                    <div class="form-group">
+                        <label class="form-label">Lokasyon</label>
+                        <select class="form-select" id="task-location" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Personel</label>
+                        <select class="form-select" id="task-staff" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tarih</label>
+                        <input type="date" class="form-input" id="task-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Öncelik</label>
+                        <select class="form-select" id="task-priority">
+                            <option value="low">Düşük</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="high">Yüksek</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Notlar</label>
+                        <textarea class="form-textarea" id="task-notes" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" data-close-modal>İptal</button>
+                <button class="btn btn-primary" id="btn-save-task">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reject Modal -->
+    <div class="modal-overlay" id="modal-reject">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Görevi Reddet</h3>
+                <button class="modal-close" data-close-modal>&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Red Nedeni</label>
+                    <textarea class="form-textarea" id="reject-reason" rows="4"
+                        placeholder="Reddetme nedeninizi yazın..." required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" data-close-modal>İptal</button>
+                <button class="btn btn-danger" id="btn-confirm-reject">Reddet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Modal -->
+    <div class="modal-overlay" id="modal-schedule">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Yeni Program</h3>
+                <button class="modal-close" data-close-modal>&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-schedule">
+                    <div class="form-group">
+                        <label class="form-label">Personel</label>
+                        <select class="form-select" id="schedule-staff" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Lokasyonlar</label>
+                        <select class="form-select" id="schedule-locations" multiple size="5" required></select>
+                        <small style="color: var(--gray-500);">Birden fazla seçmek için Ctrl tuşunu basılı tutun</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Günler</label>
+                        <div class="flex flex-wrap gap-2">
+                            <label><input type="checkbox" name="schedule-days" value="mon"> Pazartesi</label>
+                            <label><input type="checkbox" name="schedule-days" value="tue"> Salı</label>
+                            <label><input type="checkbox" name="schedule-days" value="wed"> Çarşamba</label>
+                            <label><input type="checkbox" name="schedule-days" value="thu"> Perşembe</label>
+                            <label><input type="checkbox" name="schedule-days" value="fri"> Cuma</label>
+                            <label><input type="checkbox" name="schedule-days" value="sat"> Cumartesi</label>
+                            <label><input type="checkbox" name="schedule-days" value="sun"> Pazar</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Başlangıç Tarihi</label>
+                        <input type="date" class="form-input" id="schedule-from" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bitiş Tarihi (Opsiyonel)</label>
+                        <input type="date" class="form-input" id="schedule-until">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" data-close-modal>İptal</button>
+                <button class="btn btn-primary" id="btn-save-schedule">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Modal -->
+    <div class="modal-overlay" id="modal-user">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-user-title">Yeni Kullanıcı</h3>
+                <button class="modal-close" data-close-modal>&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-user">
+                    <input type="hidden" id="user-id">
+                    <div class="form-group">
+                        <label class="form-label">Ad Soyad</label>
+                        <input type="text" class="form-input" id="user-fullname" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Kullanıcı Adı</label>
+                        <input type="text" class="form-input" id="user-username" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Şifre</label>
+                        <input type="password" class="form-input" id="user-password">
+                        <small style="color: var(--gray-500);">Düzenlemede boş bırakılırsa değişmez</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Rol</label>
+                        <select class="form-select" id="user-role" required>
+                            <option value="staff">Personel</option>
+                            <option value="supervisor">Supervisor</option>
+                            <option value="faculty_admin">Fakülte Admin</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="user-faculty-group">
+                        <label class="form-label">Fakülte</label>
+                        <select class="form-select" id="user-faculty"></select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" data-close-modal>İptal</button>
+                <button class="btn btn-primary" id="btn-save-user">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Building/Department/Room Modal -->
+    <div class="modal-overlay" id="modal-location">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-location-title">Yeni Bina</h3>
+                <button class="modal-close" data-close-modal>&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-location">
+                    <input type="hidden" id="location-type" value="building">
+                    <div class="form-group" id="location-parent-group">
+                        <label class="form-label" id="location-parent-label">Üst Kayıt</label>
+                        <select class="form-select" id="location-parent"></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ad</label>
+                        <input type="text" class="form-input" id="location-name" required>
+                    </div>
+                    <div class="form-group" id="location-code-group">
+                        <label class="form-label">Kod</label>
+                        <input type="text" class="form-input" id="location-code">
+                    </div>
+                    <div class="form-group" id="location-floor-group" class="hidden">
+                        <label class="form-label">Kat</label>
+                        <input type="text" class="form-input" id="location-floor">
+                    </div>
+                    <div class="form-group" id="location-room-type-group" class="hidden">
+                        <label class="form-label">Oda Tipi</label>
+                        <select class="form-select" id="location-room-type">
+                            <option value="room">Derslik/Oda</option>
+                            <option value="toilet">Tuvalet</option>
+                            <option value="corridor">Koridor</option>
+                            <option value="lab">Laboratuvar</option>
+                            <option value="office">Ofis</option>
+                            <option value="other">Diğer</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" data-close-modal>İptal</button>
+                <button class="btn btn-primary" id="btn-save-location">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- PWA Install Banner -->
+    <div class="install-banner" id="install-banner">
+        <span>📱 Uygulamayı telefonunuza kurun!</span>
+        <button class="btn btn-sm btn-secondary" id="btn-install">Kur</button>
+        <button class="btn btn-sm btn-ghost" id="btn-dismiss-install" style="color: white;">✕</button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/api.js"></script>
+    <script src="/js/app.js"></script>
+
+    <!-- Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('SW registered'))
+                    .catch(err => console.log('SW registration failed:', err));
+            });
+        }
+    </script>
+</body>
+
+</html>

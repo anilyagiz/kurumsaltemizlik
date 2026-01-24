@@ -1,0 +1,434 @@
+% ============================================================================
+% BOLUM 5: GELISTIRILEN SISTEM
+% ============================================================================
+% Kurumsal Temizlik Takip ve Yonetim Sistemi (KTTYS)
+% Muhammet Anil YAGIZ - 213255046
+% Kirikkale Universitesi - Bilgisayar Muhendisligi Bolumu
+% ============================================================================
+
+\chapter{GELISTIRILEN SISTEM}
+\label{chap:sistem-gelistirme}
+
+% ============================================================================
+% 5.1 GIRIS
+% ============================================================================
+\section{Giris}
+\label{sec:sistem-giris}
+
+Bu bolumde, Kurumsal Temizlik Takip ve Yonetim Sisteminin (KTTYS) 
+teknik detaylari, veritabani tasarimi, API yapisi, kullanici arayuzu 
+ve is akislari detayli olarak aciklanmaktadir.
+
+% ============================================================================
+% 5.2 SISTEM MIMARISI
+% ============================================================================
+\section{Sistem Mimarisi}
+\label{sec:sistem-mimarisi}
+
+KTTYS, uc katmanli bir mimari uzerine insa edilmistir: Sunum 
+Katmani (Presentation Layer), Is Mantigi Katmani (Business Logic 
+Layer) ve Veri Katmani (Data Layer).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.5cm,
+    layer/.style={rectangle, draw, fill=blue!20, minimum width=11cm, 
+                  minimum height=1.5cm, text centered, font=\bfseries},
+    arrow/.style={->, thick, >=stealth}
+]
+    % Katmanlar
+    \node[layer, fill=green!30] (presentation) {Sunum Katmani (HTML5, CSS3, JavaScript, PWA)};
+    \node[layer, fill=orange!30, below=of presentation] (business) 
+        {Is Mantigi Katmani (Node.js, Express.js, REST API)};
+    \node[layer, fill=purple!30, below=of business] (data) 
+        {Veri Katmani (SQLite, sql.js)};
+    
+    % Oklar
+    \draw[arrow, <->] (presentation) -- (business) 
+        node[midway, right, font=\small] {HTTP/REST};
+    \draw[arrow, <->] (business) -- (data) 
+        node[midway, right, font=\small] {SQL};
+        
+    % Kullanici
+    \node[above=0.8cm of presentation] (user) {Kullanici};
+    \draw[arrow] (user) -- (presentation);
+    
+\end{tikzpicture}
+\caption{KTTYS Uc Katmanli Sistem Mimarisi}
+\label{fig:sistem-mimarisi}
+\end{figure}
+
+\subsection{Sunum Katmani}
+\label{subsec:sunum-katmani}
+
+Sunum katmani, kullanicilarin sistemle etkilesime girdigi web 
+arayuzunu icermektedir. Single Page Application (SPA) mimarisi 
+benimsenmis olup, sayfa yenilemesi olmadan dinamik icerik 
+guncellemesi saglanmaktadir.
+
+Sunum katmaninin bilesenleri:
+
+\begin{itemize}
+    \item \textbf{index.html:} Ana HTML dosyasi, uygulama iskeleti
+    \item \textbf{style.css:} Responsive CSS stilleri
+    \item \textbf{app.js:} Uygulama mantigi ve UI guncellemeleri
+    \item \textbf{api.js:} Backend API cagri fonksiyonlari
+    \item \textbf{sw.js:} Service Worker, PWA destegi
+    \item \textbf{manifest.json:} PWA manifest dosyasi
+\end{itemize}
+
+\subsection{Is Mantigi Katmani}
+\label{subsec:is-mantigi-katmani}
+
+Is mantigi katmani, Express.js framework'u uzerinde calisan 
+RESTful API servislerini icermektedir. Bu katman, kullanici 
+isteklerini isler, is kurallarini uygular ve veritabani 
+islemlerini koordine eder.
+
+\subsection{Veri Katmani}
+\label{subsec:veri-katmani}
+
+Veri katmani, SQLite veritabanini ve sql.js kutuphanesini 
+icermektedir. Tum veriler tek bir .db dosyasinda 
+saklanmaktadir.
+
+% ============================================================================
+% 5.3 VERITABANI TASARIMI
+% ============================================================================
+\section{Veritabani Tasarimi}
+\label{sec:veritabani-tasarimi}
+
+KTTYS veritabani, iliskisel veritabani modeli uzerine tasarlanmis 
+olup, yedi adet tablo icermektedir.
+
+\subsection{Varlik Iliski Diyagrami (ER Diagram)}
+\label{subsec:er-diyagram}
+
+Veritabani semasinin varlik-iliski diyagrami Sekil 
+\ref{fig:er-diagram}'da gosterilmektedir.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=2cm,
+    entity/.style={rectangle, draw=black, fill=blue!20, 
+                   minimum width=2.5cm, minimum height=0.8cm,
+                   text centered, font=\bfseries\small}
+]
+    % Varliklar
+    \node[entity] (faculties) {FACULTIES};
+    \node[entity, right=2.5cm of faculties] (users) {USERS};
+    \node[entity, below=of faculties] (buildings) {BUILDINGS};
+    \node[entity, below=of buildings] (departments) {DEPARTMENTS};
+    \node[entity, right=2.5cm of departments] (locations) {LOCATIONS};
+    \node[entity, right=2.5cm of users] (schedules) {SCHEDULES};
+    \node[entity, below=of schedules] (tasks) {TASKS};
+    \node[entity, below=of locations] (holidays) {HOLIDAYS};
+    
+    % Iliskiler
+    \draw[->] (faculties) -- (users) node[midway, above] {1:N};
+    \draw[->] (faculties) -- (buildings) node[midway, left] {1:N};
+    \draw[->] (buildings) -- (departments) node[midway, left] {1:N};
+    \draw[->] (departments) -- (locations) node[midway, above] {1:N};
+    \draw[->] (locations) -- (schedules);
+    \draw[->] (users) -- (schedules);
+    \draw[->] (users) -- (tasks);
+    \draw[->] (locations) -- (tasks);
+    
+\end{tikzpicture}
+\caption{KTTYS Varlik Iliski Diyagrami}
+\label{fig:er-diagram}
+\end{figure}
+
+Sekil \ref{fig:er-diagram}'daki ER diyagrami, sistemdeki temel 
+varliklar ve aralarindaki iliskileri gostermektedir. Fakulteler 
+birden cok kullanici ve binaya sahip olabilmektedir. Binalar 
+departmanlari, departmanlar ise lokasyonlari icermektedir.
+
+\subsection{Veritabani Tablolari}
+\label{subsec:veritabani-tablolari}
+
+\subsubsection{Faculties (Fakulteler) Tablosu}
+\label{subsubsec:faculties}
+
+Fakulteler tablosu, universitedeki fakultelerin bilgilerini 
+saklamaktadir.
+
+\begin{lstlisting}[language=SQL, caption={Faculties Tablosu Semasi}]
+CREATE TABLE IF NOT EXISTS faculties (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    code TEXT UNIQUE NOT NULL,
+    color TEXT DEFAULT '#1e40af',
+    is_active INTEGER DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+\end{lstlisting}
+
+\subsubsection{Users (Kullanicilar) Tablosu}
+\label{subsubsec:users}
+
+Kullanicilar tablosu, sistemdeki tum kullanicilarin bilgilerini 
+ve rollerini saklamaktadir.
+
+\begin{lstlisting}[language=SQL, caption={Users Tablosu Semasi}]
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    faculty_id INTEGER REFERENCES faculties(id),
+    username TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    full_name TEXT NOT NULL,
+    role TEXT CHECK(role IN ('super_admin', 'faculty_admin', 
+                              'supervisor', 'staff')) NOT NULL,
+    is_active INTEGER DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+\end{lstlisting}
+
+\subsubsection{Tasks (Gorevler) Tablosu}
+\label{subsubsec:tasks}
+
+\begin{lstlisting}[language=SQL, caption={Tasks Tablosu Semasi}]
+CREATE TABLE IF NOT EXISTS tasks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    location_id INTEGER REFERENCES locations(id),
+    assigned_to INTEGER REFERENCES users(id),
+    schedule_id INTEGER REFERENCES schedules(id),
+    status TEXT CHECK(status IN ('pending', 'in_progress', 
+        'completed', 'approved', 'rejected')) DEFAULT 'pending',
+    priority TEXT CHECK(priority IN ('low', 'normal', 'high')) 
+        DEFAULT 'normal',
+    notes TEXT,
+    due_date DATE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+\end{lstlisting}
+
+% ============================================================================
+% 5.4 KULLANIM DURUM DIYAGRAMI
+% ============================================================================
+\section{Kullanim Durum Diyagrami (Use-Case Diagram)}
+\label{sec:use-case-diagram}
+
+Sistemin kullanim durumlari, aktorlere gore Sekil 
+\ref{fig:use-case}'de gosterilmektedir.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    usecase/.style={ellipse, draw=black, fill=cyan!20,
+                    minimum width=2.8cm, minimum height=0.7cm,
+                    text centered, font=\small},
+    actor/.style={font=\small}
+]
+    % Sistem siniri
+    \draw[dashed] (2,-6.5) rectangle (9,1);
+    \node at (5.5,1.3) {\textbf{KTTYS}};
+    
+    % Aktorler
+    \node[actor] at (0, 0) {Super Admin};
+    \node[actor] at (0, -2) {Fakulte Admin};
+    \node[actor] at (0, -4) {Supervisor};
+    \node[actor] at (0, -6) {Personel};
+    
+    % Use cases
+    \node[usecase] (uc1) at (5.5, 0) {Fakulte Yonetimi};
+    \node[usecase] (uc2) at (5.5, -1.3) {Kullanici Yonetimi};
+    \node[usecase] (uc3) at (5.5, -2.6) {Program Olusturma};
+    \node[usecase] (uc4) at (5.5, -3.9) {Gorev Onaylama};
+    \node[usecase] (uc5) at (5.5, -5.2) {Gorev Tamamlama};
+    \node[usecase] (uc6) at (5.5, -6.2) {Sisteme Giris};
+    
+    % Iliskiler
+    \draw (0.8, 0) -- (uc1);
+    \draw (0.8, 0) -- (uc2);
+    \draw (0.8, -2) -- (uc2);
+    \draw (0.8, -2) -- (uc3);
+    \draw (0.8, -4) -- (uc4);
+    \draw (0.8, -6) -- (uc5);
+    \draw (0.8, 0) -- (uc6);
+    \draw (0.8, -2) -- (uc6);
+    \draw (0.8, -4) -- (uc6);
+    \draw (0.8, -6) -- (uc6);
+    
+\end{tikzpicture}
+\caption{KTTYS Kullanim Durum Diyagrami}
+\label{fig:use-case}
+\end{figure}
+
+Sekil \ref{fig:use-case}'deki kullanim durum diyagrami, sistemdeki 
+dort farkli aktor tipinin gerceklestirebilecegi islemleri 
+gostermektedir:
+
+\begin{description}
+    \item[Super Admin:] Sistem genelinde en yuksek yetkiye sahip 
+    kullanicidir. Fakulte ekleme/silme ve tum kullanici yonetimi 
+    islemlerini yapabilir.
+    
+    \item[Fakulte Admin:] Kendi fakultesi kapsaminda kullanici, 
+    lokasyon, program ve gorev yonetimi yapabilir.
+    
+    \item[Supervisor:] Temizlik personelinin gorevlerini 
+    denetler, tamamlanan gorevleri onaylar veya reddeder.
+    
+    \item[Personel:] Kendisine atanan temizlik gorevlerini 
+    goruntler ve tamamlandi olarak isaretler.
+\end{description}
+
+% ============================================================================
+% 5.5 AKIS DIYAGRAMI
+% ============================================================================
+\section{Akis Diyagrami (Flow Chart)}
+\label{sec:akis-diyagrami}
+
+Bu bolumde, sistemin temel is akislarinin diyagramlari 
+sunulmaktadir.
+
+\subsection{Kullanici Giris Akisi}
+\label{subsec:giris-akisi}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.2cm,
+    startstop/.style={rectangle, rounded corners, minimum width=2.5cm, 
+        minimum height=0.7cm, text centered, draw=black, fill=red!30},
+    process/.style={rectangle, minimum width=2.5cm, minimum height=0.7cm, 
+        text centered, draw=black, fill=orange!30},
+    decision/.style={diamond, minimum width=2cm, minimum height=0.7cm, 
+        text centered, draw=black, fill=green!30, aspect=2},
+    io/.style={trapezium, trapezium left angle=70, trapezium right angle=110,
+        minimum width=2cm, minimum height=0.7cm, text centered, 
+        draw=black, fill=blue!30},
+    arrow/.style={thick,->,>=stealth}
+]
+    \node (start) [startstop] {Baslangic};
+    \node (input) [io, below=of start] {Kullanici Adi/Sifre};
+    \node (check1) [decision, below=of input] {Gecerli?};
+    \node (query) [process, below=of check1] {Veritabani Sorgusu};
+    \node (check2) [decision, below=of query] {Basarili?};
+    \node (session) [process, below=of check2] {Oturum Olustur};
+    \node (end) [startstop, below=of session] {Dashboard};
+    \node (error) [process, right=2cm of check2] {Hata Mesaji};
+    
+    \draw [arrow] (start) -- (input);
+    \draw [arrow] (input) -- (check1);
+    \draw [arrow] (check1) -- node[right] {Evet} (query);
+    \draw [arrow] (check1.east) -- ++(1,0) |- node[pos=0.25, above] {Hayir} (input.east);
+    \draw [arrow] (query) -- (check2);
+    \draw [arrow] (check2) -- node[right] {Evet} (session);
+    \draw [arrow] (check2) -- node[above] {Hayir} (error);
+    \draw [arrow] (error) |- (input);
+    \draw [arrow] (session) -- (end);
+\end{tikzpicture}
+\caption{Kullanici Giris Akis Diyagrami}
+\label{fig:giris-akisi}
+\end{figure}
+
+Sekil \ref{fig:giris-akisi}'daki akis diyagrami, kullanici giris 
+surecinin adimlarini gostermektedir. Giris islemi su asamalardan 
+olusmaktadir:
+
+\begin{enumerate}
+    \item Kullanici, kullanici adi ve sifresini girer.
+    \item Sistem, alanlarin dolu olup olmadigini kontrol eder.
+    \item Veritabanindan kullanici sorgulanir.
+    \item bcrypt ile sifre dogrulamasi yapilir.
+    \item Basarili giris sonrasi oturum olusturulur.
+    \item Kullanici rolune uygun dashboard'a yonlendirilir.
+\end{enumerate}
+
+% ============================================================================
+% 5.6 API TASARIMI
+% ============================================================================
+\section{API Tasarimi}
+\label{sec:api-tasarimi}
+
+KTTYS, RESTful prensiplerine uygun bir API sunmaktadir. Tablo 
+\ref{tab:api-endpoints}'da temel API endpoint'leri listelenmistir.
+
+\begin{longtable}{|p{2cm}|p{4.5cm}|p{5cm}|}
+\hline
+\textbf{Metod} & \textbf{Endpoint} & \textbf{Aciklama} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Metod} & \textbf{Endpoint} & \textbf{Aciklama} \\
+\hline
+\endhead
+\hline
+\endfoot
+
+POST & /api/auth/login & Kullanici girisi \\
+\hline
+POST & /api/auth/logout & Oturumu sonlandir \\
+\hline
+GET & /api/auth/me & Mevcut kullanici bilgisi \\
+\hline
+GET & /api/faculties & Tum fakulteleri listele \\
+\hline
+POST & /api/faculties & Yeni fakulte ekle \\
+\hline
+GET & /api/users & Kullanicilari listele \\
+\hline
+POST & /api/users & Yeni kullanici ekle \\
+\hline
+GET & /api/tasks & Gorevleri listele \\
+\hline
+POST & /api/tasks/:id/start & Goreve basla \\
+\hline
+POST & /api/tasks/:id/complete & Gorevi tamamla \\
+\hline
+POST & /api/tasks/:id/approve & Gorevi onayla \\
+\hline
+GET & /api/schedules & Programlari listele \\
+\hline
+POST & /api/schedules & Program ekle \\
+\hline
+
+\caption{KTTYS API Endpoint'leri}
+\label{tab:api-endpoints}
+\end{longtable}
+
+% ============================================================================
+% 5.7 KULLANICI ARAYUZU
+% ============================================================================
+\section{Kullanici Arayuzu}
+\label{sec:kullanici-arayuzu}
+
+KTTYS, modern ve kullanici dostu bir web arayuzu sunmaktadir. 
+Arayuz, responsive tasarim prensipleriyle gelistirilmis olup, 
+masaustu ve mobil cihazlarda optimal goruntuleme saglamaktadir.
+
+\subsection{Arayuz Bilesenleri}
+\label{subsec:arayuz-bilesenleri}
+
+\begin{enumerate}
+    \item \textbf{Giris Ekrani:} Kullanici adi ve sifre giris formu
+    \item \textbf{Dashboard:} Role ozgu ozet bilgiler ve kisayollar
+    \item \textbf{Fakulte Yonetimi:} Fakulte CRUD islemleri
+    \item \textbf{Kullanici Yonetimi:} Personel listesi ve duzenleme
+    \item \textbf{Lokasyon Yonetimi:} Bina/Kat/Oda hiyerarsisi
+    \item \textbf{Program Yonetimi:} Haftalik program olusturma
+    \item \textbf{Gorev Takip:} Gunluk gorev listesi ve durumlari
+    \item \textbf{Raporlar:} Performans ve istatistik raporlari
+\end{enumerate}
+
+\subsection{Renk Paleti ve Tasarim}
+\label{subsec:tasarim}
+
+Sistem, modern ve profesyonel bir gorunum icin asagidaki 
+renk paletini kullanmaktadir:
+
+\begin{itemize}
+    \item \textbf{Ana Renk:} \#1e40af (Koyu Mavi)
+    \item \textbf{Basari:} \#16a34a (Yesil)
+    \item \textbf{Uyari:} \#ea580c (Turuncu)
+    \item \textbf{Hata:} \#dc2626 (Kirmizi)
+    \item \textbf{Arkaplan:} \#f8fafc (Acik Gri)
+\end{itemize}
+
+Bu bolumde aciklanan sistem bilesenleri, KTTYS'nin tam 
+fonksiyonel bir temizlik takip sistemi olarak calismasini 
+saglamaktadir.

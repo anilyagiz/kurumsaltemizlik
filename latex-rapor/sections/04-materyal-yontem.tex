@@ -1,0 +1,313 @@
+% ============================================================================
+% BOLUM 4: MATERYAL VE YONTEM
+% ============================================================================
+% Kurumsal Temizlik Takip ve Yonetim Sistemi (KTTYS)
+% Muhammet Anil YAGIZ - 213255046
+% Kirikkale Universitesi - Bilgisayar Muhendisligi Bolumu
+% ============================================================================
+
+\chapter{MATERYAL VE YONTEM}
+\label{chap:materyal-yontem}
+
+\section{Giris}
+\label{sec:materyal-giris}
+
+Bu bolumde, Kurumsal Temizlik Takip ve Yonetim Sisteminin (KTTYS) 
+gelistirilmesinde kullanilan programlama dilleri, framework'ler, 
+veritabani sistemleri, gelistirme araclari ve metodolojiler detayli 
+olarak aciklanmaktadir.
+
+\section{Programlama Dili}
+\label{sec:programlama-dili}
+
+KTTYS projesinde, hem backend hem de frontend gelistirmesi icin 
+\textbf{JavaScript} programlama dili tercih edilmistir.
+
+\subsection{JavaScript Dili Ozellikleri}
+\label{subsec:javascript-ozellikleri}
+
+JavaScript, 1995 yilinda Brendan Eich tarafindan gelistirilen, 
+yuksek seviyeli, dinamik tipli ve prototip tabanli bir programlama 
+dilidir.
+
+JavaScript'in temel ozellikleri sunlardir:
+
+\begin{enumerate}
+    \item \textbf{Dinamik Tipleme:} Degisken tipleri calisma 
+    zamaninda belirlenir.
+    \item \textbf{Birinci Sinif Fonksiyonlar:} Fonksiyonlar 
+    degiskenlere atanabilir, parametre olarak gecilebilir.
+    \item \textbf{Prototip Tabanli Kalitim:} Sinif tabanli 
+    kalitim yerine, nesneler dogrudan miras alabilir.
+    \item \textbf{Olay Gudumlu Programlama:} Kullanici 
+    etkilesimlerine ve asenkron olaylara yanit verebilme.
+    \item \textbf{Asenkron Programlama:} Promise ve async/await 
+    yapilariyla asenkron islemlerin yonetimi.
+\end{enumerate}
+
+\subsection{JavaScript Secim Gerekcesi}
+\label{subsec:javascript-gerekce}
+
+JavaScript'in proje icin tercih edilme nedenleri:
+
+\begin{itemize}
+    \item \textbf{Tam Yigin Gelistirme:} Node.js sayesinde hem 
+    sunucu hem de istemci tarafinda ayni dilin kullanilmasi.
+    \item \textbf{Genis Ekosistem:} npm uzerinde 1.5 milyondan 
+    fazla paket bulunmaktadir.
+    \item \textbf{Tarayici Destegi:} Tum modern web tarayicilari 
+    tarafindan yerel olarak desteklenmektedir.
+    \item \textbf{Topluluk Destegi:} Dunyanin en populer 
+    programlama dillerinden biri.
+\end{itemize}
+
+\section{Programlama Platformu}
+\label{sec:programlama-platformu}
+
+KTTYS'nin backend gelistirmesinde \textbf{Node.js} calisma ortami 
+ve \textbf{Express.js} framework'u kullanilmistir.
+
+\subsection{Node.js Calisma Ortami}
+\label{subsec:nodejs}
+
+Node.js, JavaScript'in sunucu tarafinda calismasini saglayan, 
+acik kaynakli, platformlar arasi bir calisma ortamidir. Ryan Dahl 
+tarafindan 2009 yilinda gelistirilmistir.
+
+Node.js'in temel ozellikleri:
+
+\begin{enumerate}
+    \item \textbf{Olay Dongusu (Event Loop):} Tek is parcacikli, 
+    engellemesiz (non-blocking) I/O modeli.
+    \item \textbf{npm:} Dunyanin en buyuk yazilim kayit defteri.
+    \item \textbf{Aktif Gelistirme:} Surekli guncellenen kararli 
+    ve LTS surumleri.
+    \item \textbf{Platformlar Arasi:} Windows, macOS ve Linux 
+    uzerinde calisabilme.
+\end{enumerate}
+
+\subsection{Express.js Framework}
+\label{subsec:expressjs}
+
+Express.js, Node.js icin minimal ve esnek bir web uygulama 
+framework'udur.
+
+Express.js'in proje kapsaminda kullanilan ozellikleri:
+
+\begin{enumerate}
+    \item \textbf{Yonlendirme (Routing):} HTTP isteklerinin 
+    uygun isleyicilere yonlendirilmesi.
+    \item \textbf{Ara Katman (Middleware):} Istek-yanit dongusune 
+    eklenen fonksiyonlar zinciri.
+    \item \textbf{Statik Dosya Sunumu:} HTML, CSS, JavaScript ve 
+    gorsel dosyalarin sunulmasi.
+    \item \textbf{Hata Yonetimi:} Merkezi hata yakalama ve 
+    isleme mekanizmasi.
+\end{enumerate}
+
+Express.js ile temel sunucu yapilandirmasi:
+
+\begin{lstlisting}[language=JavaScript, caption={Express.js Sunucu Yapilandirmasi}]
+const express = require('express');
+const session = require('express-session');
+const cors = require('cors');
+const path = require('path');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware yapilandirmasi
+app.use(cors({ origin: true, credentials: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Oturum yonetimi
+app.use(session({
+    secret: 'kirikkale-temizlik-secret-2024',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000 // 24 saat
+    }
+}));
+
+// Sunucu baslatma
+app.listen(PORT, () => {
+    console.log(`Server calisiyor: http://localhost:${PORT}`);
+});
+\end{lstlisting}
+
+\section{Veritabani}
+\label{sec:veritabani}
+
+KTTYS projesinde veritabani yonetim sistemi olarak \textbf{SQLite} 
+tercih edilmistir.
+
+\subsection{SQLite Ozellikleri}
+\label{subsec:sqlite-ozellikleri}
+
+SQLite, sunucu gerektirmeyen, yapilandirma gerektirmeyen, 
+kendi kendine yeten bir SQL veritabani motorudur.
+
+SQLite'in temel ozellikleri:
+
+\begin{enumerate}
+    \item \textbf{Sunucusuz Mimari:} Ayri bir veritabani sunucusu 
+    gerektirmez.
+    \item \textbf{Sifir Yapilandirma:} Kurulum veya yonetim 
+    gerektirmez.
+    \item \textbf{Tasinabilirlik:} Veritabani tek bir dosyada 
+    saklanir.
+    \item \textbf{ACID Uyumlu:} Atomicity, Consistency, Isolation, 
+    Durability ozelliklerini destekler.
+    \item \textbf{Hafif:} Yaklasik 600 KB kod boyutu.
+\end{enumerate}
+
+\subsection{sql.js Kutuphanesi}
+\label{subsec:sqljs}
+
+Node.js ortaminda SQLite erisimi icin \textbf{sql.js} kutuphanesi 
+kullanilmistir. sql.js, SQLite'in JavaScript'e derlenmis 
+versiyonudur.
+
+\section{Kutuphaneler}
+\label{sec:kutuphaneler}
+
+Projede kullanilan baslica npm paketleri ve islevleri Tablo 
+\ref{tab:npm-paketleri}'de listelenmistir.
+
+\begin{longtable}{|p{3cm}|p{2cm}|p{7cm}|}
+\hline
+\textbf{Paket Adi} & \textbf{Versiyon} & \textbf{Islev} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Paket Adi} & \textbf{Versiyon} & \textbf{Islev} \\
+\hline
+\endhead
+\hline
+\endfoot
+
+express & 4.18.2 & Web uygulama framework'u \\
+\hline
+express-session & 1.17.3 & Sunucu tarafli oturum yonetimi \\
+\hline
+sql.js & 1.x & JavaScript SQLite veritabani motoru \\
+\hline
+bcryptjs & 2.4.3 & Sifre hashleme ve dogrulama \\
+\hline
+cors & 2.8.5 & Cross-Origin Resource Sharing yonetimi \\
+\hline
+
+\caption{Projede Kullanilan npm Paketleri}
+\label{tab:npm-paketleri}
+\end{longtable}
+
+\section{Gelistirme Araclari}
+\label{sec:gelistirme-araclari}
+
+\subsection{Visual Studio Code}
+\label{subsec:vscode}
+
+Visual Studio Code (VS Code), Microsoft tarafindan gelistirilen, 
+ucretsiz ve acik kaynakli bir kod editorudur.
+
+Projede kullanilan VS Code eklentileri:
+\begin{itemize}
+    \item ESLint: JavaScript kod kalitesi ve stil kontrolu
+    \item Prettier: Otomatik kod formatlama
+    \item REST Client: API test istekleri
+    \item SQLite Viewer: Veritabani icerigi goruntuleme
+\end{itemize}
+
+\subsection{Git Versiyon Kontrolu}
+\label{subsec:git}
+
+Git, dagitik versiyon kontrol sistemi olarak kullanilmistir.
+
+\section{Yazilim Gelistirme Metodolojisi}
+\label{sec:metodoloji}
+
+Projede \textbf{Cevik (Agile)} yazilim gelistirme metodolojisi 
+benimsenmistir.
+
+\subsection{Gelistirme Sureci}
+\label{subsec:gelistirme-sureci}
+
+Proje gelistirme sureci asagidaki asamalardan olusmaktuntur:
+
+\begin{enumerate}
+    \item \textbf{Gereksinim Analizi:} Problem tanimi, paydas 
+    analizi ve fonksiyonel gereksinimlerin belirlenmesi.
+    \item \textbf{Tasarim:} Sistem mimarisi, veritabani semasi 
+    ve API tasariminin yapilmasi.
+    \item \textbf{Gelistirme:} Iteratif kod gelistirme, modul 
+    bazli implementasyon.
+    \item \textbf{Test:} Birim testleri, entegrasyon testleri.
+    \item \textbf{Dagitim:} Sistem kurulumu ve kullanici egitimi.
+\end{enumerate}
+
+\subsection{MVC Mimari Deseni}
+\label{subsec:mvc-deseni}
+
+KTTYS, Model-View-Controller (MVC) mimari desenini takip 
+etmektedir. Bu desen, uygulamayi uc temel bilesene ayirarak 
+kodun organizasyonunu ve bakimini kolaylastirmaktadir.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=2cm,
+    box/.style={rectangle, draw, fill=blue!20, text width=3cm, 
+                text centered, minimum height=1.2cm, rounded corners}
+]
+    % MVC Bilesenleri
+    \node[box, fill=green!30] (view) {View\\(public/)};
+    \node[box, fill=orange!30, right=of view] (controller) {Controller\\(routes/)};
+    \node[box, fill=purple!30, right=of controller] (model) {Model\\(database/)};
+    
+    % Kullanici
+    \node[above=1cm of view] (user) {Kullanici};
+    
+    % Oklar
+    \draw[->] (user) -- (view);
+    \draw[<->] (view) -- (controller);
+    \draw[<->] (controller) -- (model);
+\end{tikzpicture}
+\caption{KTTYS MVC Mimarisi}
+\label{fig:mvc-mimari}
+\end{figure}
+
+\section{Proje Dosya Yapisi}
+\label{sec:dosya-yapisi}
+
+KTTYS projesinin dosya ve dizin yapisi asagidaki gibi 
+organize edilmistir:
+
+\begin{lstlisting}[basicstyle=\ttfamily\small, frame=single, 
+                   caption={Proje Dizin Yapisi}]
+temizliktakip/
+|-- data/
+|   +-- kirikkale.db      # SQLite veritabani
+|-- database/
+|   |-- db.js             # Veritabani baglantisi
+|   |-- init.js           # Sema olusturma
+|   |-- schema.sql        # SQL sema tanimlari
+|   +-- seed.js           # Ornek veri ekleme
+|-- middleware/
+|   +-- auth.js           # Kimlik dogrulama
+|-- public/
+|   |-- css/style.css     # CSS stilleri
+|   |-- js/app.js         # Uygulama mantigi
+|   +-- index.html        # Ana HTML sayfasi
+|-- routes/
+|   |-- auth.js           # Kimlik dogrulama
+|   |-- faculties.js      # Fakulte yonetimi
+|   |-- users.js          # Kullanici yonetimi
+|   |-- tasks.js          # Gorev yonetimi
+|   +-- schedules.js      # Program yonetimi
+|-- server.js             # Ana sunucu dosyasi
++-- package.json          # Proje bagimliliklari
+\end{lstlisting}

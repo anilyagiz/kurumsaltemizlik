@@ -1,0 +1,428 @@
+% ============================================================================
+% BOLUM 1: OZET VE GIRIS
+% ============================================================================
+% Kurumsal Temizlik Takip ve Yonetim Sistemi (KTTYS)
+% Muhammet Anil YAGIZ - 213255046
+% Kirikkale Universitesi - Bilgisayar Muhendisligi Bolumu
+% ============================================================================
+
+\chapter{OZET VE GIRIS}
+\label{chap:ozet}
+
+% ============================================================================
+% 1.1 OZET
+% ============================================================================
+\section{Ozet}
+\label{sec:ozet}
+
+Gunumuzde kurumsal yonetim sistemleri, organizasyonlarin verimli ve etkin bir 
+sekilde isleyisini surdurebilmesi icin kritik bir oneme sahiptir. Ozellikle 
+buyuk olcekli kurumlarda temizlik hizmetlerinin planlanmasi, takibi ve 
+denetlenmesi ciddi bir koordinasyon sorunu olusturmaktadir. Bu calismada, 
+Kirikkale Universitesi kampusundeki temizlik operasyonlarini dijitallestirmek 
+ve optimize etmek amaciyla \textbf{Kurumsal Temizlik Takip ve Yonetim Sistemi 
+(KTTYS)} gelistirilmistir.
+
+Gelistirilen sistem, modern web teknolojileri kullanilarak tasarlanmis olup, 
+Progressive Web Application (PWA) mimarisi uzerine insa edilmistir. Sistem, 
+Node.js tabanli Express.js framework'u ile RESTful API mimarisi kullanilarak 
+backend tarafinda, SQLite veritabani ile veri kaliciligi saglanarak ve 
+responsive HTML5/CSS3/JavaScript ile frontend tarafinda tam entegre bir 
+cozum sunmaktadir.
+
+KTTYS, cok katmanli bir kullanici yetkilendirme sistemi sunarak, Super Admin, 
+Fakulte Yoneticisi, Denetleyici (Supervisor) ve Temizlik Personeli olmak uzere 
+dort farkli kullanici rolunu desteklemektedir. Her bir rol, sistem uzerinde 
+belirli yetkilere sahip olup, hiyerarsik bir yonetim yapisi olusturmaktadir. 
+Bu yapi sayesinde, universite genelindeki temizlik operasyonlari merkezi 
+olarak yonetilebilmekte, ancak fakulte bazinda desantralize bir kontrol 
+mekanizmasi da saglanmaktadir.
+
+Sistemin temel ozellikleri arasinda haftalik temizlik programlarinin 
+olusturulmasi, gunluk gorevlerin otomatik atanmasi, gorev tamamlama ve onay 
+sureclerinin takibi, performans raporlarinin olusturulmasi ve resmi tatil 
+gunlerinin yonetimi yer almaktadir. Ayrica sistem, Turkiye'deki resmi tatiller 
+ve dini bayramlari otomatik olarak taniyarak, bu gunlerde gorev atamasi 
+yapilmamasini saglamaktadir.
+
+Calisma sonucunda, manuel olarak yurutulen temizlik takip sureclerinin 
+dijitallestirilmesiyle zaman ve kaynak tasarrufu saglanmistir. Sistem, 
+kullanici dostu arayuzu ve mobil uyumlu tasarimi sayesinde tum paydaslar 
+tarafindan kolaylikla kullanilabilmektedir. Gerceklestirilen testler, 
+sistemin yuksek performans ve guvenilirlik standartlarini karsiladigini 
+gostermektedir.
+
+\textbf{Anahtar Kelimeler:} Temizlik Takip Sistemi, Kurumsal Yonetim, 
+Progressive Web Application, Node.js, Express.js, SQLite, RESTful API, 
+MVC Mimarisi, Rol Tabanli Erisim Kontrolu
+
+% ============================================================================
+% 1.2 GIRIS
+% ============================================================================
+\section{Giris}
+\label{sec:giris}
+
+Yirmi birinci yuzyilda bilgi teknolojilerinin hizla gelismesi, kurumsal 
+sureclerin dijitallestirilmesini zorunlu hale getirmistir. Bu dijital 
+donusum, organizasyonlarin operasyonel verimliligini artirirken, ayni 
+zamanda kaynak yonetimini optimize etmekte ve karar alma sureclerini 
+hizlandirmaktadir.
+
+Universite kampusleri, genis fiziksel alanlari ve yogun insan trafigi ile 
+temizlik hizmetlerinin yonetimi acisindan onemli zorluklar barindirmaktadir. 
+Kirikkale Universitesi, bunyesindeki cok sayida fakulte, bina ve hizmet 
+alani ile bu zorlugun somut bir ornegini temsil etmektedir. Geleneksel 
+temizlik yonetimi yontemleri, genellikle kagit tabanli kayitlar, sozel 
+iletisim ve manuel takip sureclerine dayanmakta olup, bu durum cesitli 
+sorunlara yol acmaktadir.
+
+\subsection{Mevcut Sistemin Analizi}
+\label{subsec:mevcut-sistem}
+
+Mevcut temizlik yonetim sureclerinde karsilasilan temel problemler su 
+sekilde ozetlenebilir:
+
+\begin{enumerate}
+    \item \textbf{Izlenebilirlik Eksikligi:} Temizlik gorevlerinin ne zaman 
+    ve kim tarafindan yapildiginin takibi oldukca guctur. Kagit tabanli 
+    kayitlar kaybolabilmekte veya manipule edilebilmektedir.
+    
+    \item \textbf{Koordinasyon Zorluklari:} Farkli binalar ve fakulteler 
+    arasindaki temizlik personelinin koordinasyonu, ozellikle acil 
+    durumlarda ciddi sorunlara neden olmaktadir.
+    
+    \item \textbf{Kaynak Optimizasyonu:} Personel is yukuun dengeli 
+    dagitilamamamasi, bazi alanlarda asiri yuklenme, bazi alanlarda ise 
+    yetersiz hizmet sunumu ile sonuclanmaktadir.
+    
+    \item \textbf{Raporlama Guclukleri:} Temizlik performansina iliskin 
+    istatistiksel verilerin toplanmasi ve analiz edilmesi manuel 
+    sureclerle oldukca zaman alicidir.
+    
+    \item \textbf{Iletisim Kopukluklari:} Yonetim, denetleyiciler ve 
+    temizlik personeli arasindaki iletisim cogunlukla anlik ve 
+    yapilandirilmamis bir sekilde gerceklesmektedir.
+\end{enumerate}
+
+\subsection{Cozum Yaklasimi}
+\label{subsec:cozum-yaklasimi}
+
+Bu calismada, yukarida belirtilen problemlere cozum uretmek amaciyla 
+web tabanli bir temizlik takip ve yonetim sistemi gelistirilmistir. 
+Gelistirilen sistem, modern yazilim muhendisligi prensiplerini takip 
+ederek asagidaki temel ozellikleri sunmaktadir:
+
+\begin{itemize}
+    \item \textbf{Merkezi Veri Yonetimi:} Tum temizlik verileri merkezi 
+    bir veritabaninda saklanarak tutarlilik ve erisilebilirlik 
+    saglanmaktadir.
+    
+    \item \textbf{Rol Tabanli Erisim Kontrolu (RBAC):} Dort farkli 
+    kullanici rolu ile hiyerarsik bir yetkilendirme sistemi 
+    uygulanmaktadir.
+    
+    \item \textbf{Gercek Zamanli Takip:} Gorevlerin anlik durumlari 
+    sistem uzerinden izlenebilmektedir.
+    
+    \item \textbf{Otomatik Gorev Atama:} Haftalik programlara dayali 
+    olarak gunluk gorevler otomatik olarak olusturulmaktadir.
+    
+    \item \textbf{Kapsamli Raporlama:} Fakulte, personel ve donem 
+    bazinda detayli performans raporlari uretilebilmektedir.
+    
+    \item \textbf{Platformdan Bagimsiz Erisim:} PWA mimarisi sayesinde 
+    sistem, masaustu ve mobil cihazlardan erisilebilir durumdadir.
+\end{itemize}
+
+\subsection{Projenin Kapsami}
+\label{subsec:proje-kapsami}
+
+Bu bitirme projesi, Kirikkale Universitesi Muhendislik Fakultesi'nden 
+baslayarak pilot uygulama kapsaminda alti fakulteyi iceren bir 
+temizlik takip sistemi gelistirmeyi hedeflemektedir. Sistemin 
+kapsami asagidaki bilesenleri icermektedir:
+
+\begin{enumerate}
+    \item \textbf{Kullanici Yonetimi Modulu:} Kullanici kayit, giris, 
+    oturum yonetimi ve rol atama islevleri.
+    
+    \item \textbf{Organizasyon Yapisi Modulu:} Fakulte, bina, departman 
+    ve lokasyon (oda) hiyerarsisinin tanimlanmasi.
+    
+    \item \textbf{Program Yonetimi Modulu:} Haftalik temizlik 
+    programlarinin olusturulmasi ve personel atamalarinin yapilmasi.
+    
+    \item \textbf{Gorev Yonetimi Modulu:} Gunluk gorevlerin otomatik 
+    olusturulmasi, takibi ve onay sureclerinin yonetimi.
+    
+    \item \textbf{Tatil Yonetimi Modulu:} Resmi tatil ve ozel gunlerin 
+    tanimlanmasi ve gorev sistemine entegrasyonu.
+    
+    \item \textbf{Raporlama Modulu:} Cesitli kriterlere gore performans 
+    ve istatistik raporlarinin olusturulmasi.
+\end{enumerate}
+
+\subsection{Raporun Organizasyonu}
+\label{subsec:rapor-organizasyonu}
+
+Bu bitirme projesi raporu, akademik standartlara uygun olarak 
+yapilandirilmis olup, asagidaki bolumlerden olusmaktadir:
+
+\textbf{Bolum 2 - Problem Tanimi:} Bu bolumde, projenin ele aldigi 
+problem detayli olarak tanimlanmakta ve mevcut durumun analizi 
+yapilmaktadir. Ayrica projenin amac ve hedefleri net bir sekilde 
+ortaya konulmaktadir.
+
+\textbf{Bolum 3 - Benzer Calismalar:} Literaturde yer alan ilgili 
+akademik calismalar ve mevcut ticari cozumler incelenmektedir. 
+Bu bolumde, projenin mevcut calismalardan farkliliklari ve 
+katkilari tartisilmaktadir.
+
+\textbf{Bolum 4 - Materyal ve Yontem:} Projede kullanilan 
+programlama dilleri, framework'ler, veritabani sistemleri ve 
+gelistirme araclari detayli olarak aciklanmaktadir. Ayrica 
+yazilim gelistirme metodolojisi ve mimari kararlar bu bolumde 
+ele alinmaktadir.
+
+\textbf{Bolum 5 - Gelistirilen Sistem:} Sistemin teknik detaylari, 
+veritabani semasi, API tasarimi, kullanici arayuzu ve is akislari 
+diyagramlar esliginde sunulmaktadir.
+
+\textbf{Bolum 6 - Sonuc:} Projenin ciktilari degerlendirilmekte, 
+karsilasilan zorluklar tartisilmakta ve gelecek calismalar icin 
+oneriler sunulmaktadir.
+
+\subsection{Projenin Onemi ve Katkilari}
+\label{subsec:proje-onemi}
+
+Bu proje, asagidaki acilardan onem tasimakta ve literature katki 
+saglamaktadir:
+
+\begin{enumerate}
+    \item \textbf{Akademik Katki:} Kurumsal temizlik yonetimi 
+    alaninda Turkce literature kapsamli bir uygulama calismasi 
+    eklenmektedir.
+    
+    \item \textbf{Pratik Katki:} Kirikkale Universitesi'nin temizlik 
+    operasyonlarinin dijitallestirilmesi ile somut bir verimlilik 
+    artisi hedeflenmektedir.
+    
+    \item \textbf{Teknolojik Katki:} Modern web teknolojilerinin 
+    kurumsal yonetim sistemlerinde etkin kullanimina ornek 
+    teskil etmektedir.
+    
+    \item \textbf{Metodolojik Katki:} Rol tabanli erisim kontrolu 
+    ve hiyerarsik organizasyon yonetimi konularinda referans 
+    bir uygulama sunulmaktadir.
+\end{enumerate}
+
+% ============================================================================
+% 1.3 TEMEL KAVRAMLAR
+% ============================================================================
+\section{Temel Kavramlar ve Terminoloji}
+\label{sec:temel-kavramlar}
+
+Bu bolumde, raporda kullanilan teknik terimlerin ve kavramlarin 
+aciklamalari verilmektedir.
+
+\subsection{Web Uygulama Kavramlari}
+\label{subsec:web-kavramlari}
+
+\begin{description}
+    \item[Progressive Web Application (PWA):] Web ve mobil uygulama 
+    ozelliklerini birlestiren, tarayici uzerinden calisan ancak 
+    yerel uygulama deneyimi sunan modern web uygulamasi mimarisidir. 
+    PWA'lar, cevrimdisi calisabilme, bildirim gonderme ve ana ekrana 
+    eklenebilme gibi ozellikler sunar.
+    
+    \item[Single Page Application (SPA):] Kullanici etkileşimlerinde 
+    sayfanin tamaminin yeniden yuklenmesi yerine, yalnizca gerekli 
+    bilesenlerin dinamik olarak guncellenmesi prensibine dayanan 
+    web uygulama mimarisidir.
+    
+    \item[RESTful API:] Representational State Transfer (REST) 
+    prensiplerine uygun olarak tasarlanmis, HTTP protokolu uzerinden 
+    kaynak odakli iletisim saglayan uygulama programlama arayuzudur.
+    
+    \item[Model-View-Controller (MVC):] Yazilim uygulamalarini uc 
+    temel bilesene ayiran mimari desendir: Model (veri ve is 
+    mantigi), View (kullanici arayuzu) ve Controller (kullanici 
+    girislerinin islenmesi).
+\end{description}
+
+\subsection{Guvenlik Kavramlari}
+\label{subsec:guvenlik-kavramlari}
+
+\begin{description}
+    \item[Rol Tabanli Erisim Kontrolu (RBAC):] Kullanicilara belirli 
+    roller atanarak, bu rollere gore sistem kaynaklarina erisim 
+    yetkilerinin belirlenmesi yaklasimdir.
+    
+    \item[Oturum Yonetimi (Session Management):] Kullanici 
+    kimlik dogrulamasi sonrasi olusturulan oturum bilgilerinin 
+    sunucu tarafinda saklanmasi ve yonetilmesi surecidir.
+    
+    \item[Sifre Hashleme:] Kullanici sifrelerinin geri donusturulemez 
+    kriptografik fonksiyonlar araciligiyla guvenli bir sekilde 
+    saklanmasi islemidir. Bu projede bcrypt algoritmasi 
+    kullanilmaktadir.
+    
+    \item[CORS (Cross-Origin Resource Sharing):] Farkli kaynaklardan 
+    gelen HTTP isteklerinin guvenli bir sekilde yonetilmesini 
+    saglayan mekanizmadir.
+\end{description}
+
+\subsection{Veritabani Kavramlari}
+\label{subsec:veritabani-kavramlari}
+
+\begin{description}
+    \item[Iliskisel Veritabani:] Verilerin tablolar halinde organize 
+    edildigi ve tablolar arasinda iliskilerin tanimlandigi 
+    veritabani modelidir.
+    
+    \item[SQLite:] Sunucu gerektirmeyen, dosya tabanli, hafif ve 
+    tasinabilir bir iliskisel veritabani yonetim sistemidir.
+    
+    \item[Foreign Key (Yabanci Anahtar):] Bir tablodaki alana, 
+    baska bir tablonun birincil anahtarina referans vererek 
+    tablolar arasi iliski kuran kisitlamadir.
+    
+    \item[CRUD Islemleri:] Create (Olustur), Read (Oku), Update 
+    (Guncelle), Delete (Sil) temel veritabani operasyonlarinin 
+    kisaltmasidir.
+\end{description}
+
+% ============================================================================
+% 1.4 SISTEM GEREKSINIMLERI
+% ============================================================================
+\section{Sistem Gereksinimleri}
+\label{sec:sistem-gereksinimleri}
+
+Bu bolumde, KTTYS'nin fonksiyonel ve fonksiyonel olmayan 
+gereksinimleri tanimlanmaktadir.
+
+\subsection{Fonksiyonel Gereksinimler}
+\label{subsec:fonksiyonel-gereksinimler}
+
+Sistemin karsilamasi gereken temel fonksiyonel gereksinimler 
+Tablo \ref{tab:fonksiyonel-gereksinimler}'de listelenmistir.
+
+\begin{longtable}{|p{1.5cm}|p{3cm}|p{8cm}|}
+\hline
+\textbf{Kod} & \textbf{Gereksinim} & \textbf{Aciklama} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Kod} & \textbf{Gereksinim} & \textbf{Aciklama} \\
+\hline
+\endhead
+\hline
+\endfoot
+
+FR-01 & Kullanici Girisi & Sistem, kullanicilarin kullanici adi ve 
+sifre ile guvenli bir sekilde giris yapabilmesini saglamalidir. \\
+\hline
+FR-02 & Rol Yonetimi & Sistem, dort farkli kullanici rolunu (Super 
+Admin, Fakulte Admin, Supervisor, Staff) desteklemelidir. \\
+\hline
+FR-03 & Fakulte Yonetimi & Super Admin, fakulte ekleme, duzenleme 
+ve silme islemlerini yapabilmelidir. \\
+\hline
+FR-04 & Kullanici Yonetimi & Yetkili kullanicilar, personel ekleme, 
+duzenleme ve pasiflestirme islemlerini yapabilmelidir. \\
+\hline
+FR-05 & Lokasyon Yonetimi & Bina, departman ve oda tanimlamalari 
+yapilabilmelidir. \\
+\hline
+FR-06 & Program Olusturma & Haftalik temizlik programlari 
+olusturulabilmeli ve personele atanabilmelidir. \\
+\hline
+FR-07 & Gorev Yonetimi & Gunluk gorevler otomatik olusturulmali 
+ve personel tarafindan takip edilebilmelidir. \\
+\hline
+FR-08 & Gorev Onaylama & Supervisor, tamamlanan gorevleri onaylama 
+veya reddetme yetkisine sahip olmalidir. \\
+\hline
+FR-09 & Tatil Yonetimi & Resmi tatiller tanimlanabilmeli ve 
+tatil gunlerinde gorev atamasi engellenmelidir. \\
+\hline
+FR-10 & Raporlama & Fakulte ve personel bazinda performans 
+raporlari olusturulabilmelidir. \\
+\hline
+
+\caption{Sistemin Fonksiyonel Gereksinimleri}
+\label{tab:fonksiyonel-gereksinimler}
+\end{longtable}
+
+\subsection{Fonksiyonel Olmayan Gereksinimler}
+\label{subsec:fonksiyonel-olmayan-gereksinimler}
+
+Sistemin kalite ozelliklerine iliskin gereksinimler asagida 
+detaylandirilmistir:
+
+\begin{enumerate}
+    \item \textbf{Performans:}
+    \begin{itemize}
+        \item Sayfa yuklenme suresi 3 saniyeyi gecmemelidir.
+        \item API yanit sureleri ortalama 500ms altinda olmalidir.
+        \item Sistem, es zamanli 100 kullaniciyi desteklemelidir.
+    \end{itemize}
+    
+    \item \textbf{Guvenlik:}
+    \begin{itemize}
+        \item Tum sifreler bcrypt ile hashlenmelidir.
+        \item Oturum sureleri 24 saat ile sinirlandirilmalidir.
+        \item Yetkisiz erisim girisimleri loglanmalidir.
+    \end{itemize}
+    
+    \item \textbf{Kullanilabilirlik:}
+    \begin{itemize}
+        \item Arayuz Turkce olmalidir.
+        \item Responsive tasarim ile mobil uyumluluk saglanmalidir.
+        \item Kullanici hatalari anlasilir mesajlarla bildirilmelidir.
+    \end{itemize}
+    
+    \item \textbf{Bakim Kolayligi:}
+    \begin{itemize}
+        \item Kod, moduler yapida organize edilmelidir.
+        \item API endpoint'leri RESTful standartlarina uymalidir.
+        \item Veritabani semasi genisletilebilir olmalidir.
+    \end{itemize}
+    
+    \item \textbf{Tasinabilirlik:}
+    \begin{itemize}
+        \item Sistem, farkli isletim sistemlerinde calisabilmelidir.
+        \item Modern web tarayicilarinin tamaminda uyumlu olmalidir.
+    \end{itemize}
+\end{enumerate}
+
+% ============================================================================
+% 1.5 PROJENIN SINIRLILIKLARI
+% ============================================================================
+\section{Projenin Sinirliliklari}
+\label{sec:sinirliliklar}
+
+Bu calismanin kapsami ve uygulama alanina iliskin bazi 
+sinirliliklar bulunmaktadir:
+
+\begin{enumerate}
+    \item \textbf{Pilot Uygulama Kapsami:} Sistem, Kirikkale 
+    Universitesi'nin mevcut alti fakultesi icin tasarlanmis 
+    olup, hastane ve diger kampus binalari kapsam disindadir.
+    
+    \item \textbf{Cevrimdisi Calisma:} PWA mimarisine ragmen, 
+    tam cevrimdisi calisma destegi bu asamada sinirlidir.
+    
+    \item \textbf{Entegrasyon:} Mevcut universite bilgi sistemleri 
+    ile entegrasyon bu proje kapsaminda gerceklestirilmemistir.
+    
+    \item \textbf{Mobil Uygulama:} Yerel mobil uygulama (native app) 
+    gelistirmesi yapilmamis olup, mobil erisim PWA uzerinden 
+    saglanmaktadir.
+    
+    \item \textbf{Coklu Dil Destegi:} Sistem yalnizca Turkce 
+    arayuz sunmaktadir.
+\end{enumerate}
+
+Bu sinirliliklar, projenin gelecek asamalarinda ele alinmasi 
+planlanan gelistirme alanlarini olusturmaktadir.
