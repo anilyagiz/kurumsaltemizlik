@@ -36,15 +36,24 @@ function saveDb() {
 
 // better-sqlite3 uyumlu wrapper
 const dbWrapper = {
+    // Transaction durumu takibi
+    _inTransaction: false,
+
     prepare(sql) {
+        const self = this;
         return {
             run(...params) {
-                if (params.length > 0) {
-                    db.run(sql, params);
+                // SQL.js undefined kabul etmiyor, null'a çevir
+                const sanitizedParams = params.map(p => p === undefined ? null : p);
+                if (sanitizedParams.length > 0) {
+                    db.run(sql, sanitizedParams);
                 } else {
                     db.run(sql);
                 }
-                saveDb();
+                // Transaction aktifken saveDb çağırma - transaction sonunda çağrılacak
+                if (!self._inTransaction) {
+                    saveDb();
+                }
                 const lastId = db.exec("SELECT last_insert_rowid()");
                 return {
                     lastInsertRowid: lastId[0]?.values[0]?.[0] || 0,
@@ -88,9 +97,6 @@ const dbWrapper = {
             }
         };
     },
-
-    // Transaction durumu takibi
-    _inTransaction: false,
 
     // Transaction desteği (better-sqlite3 uyumlu)
     transaction(fn) {
